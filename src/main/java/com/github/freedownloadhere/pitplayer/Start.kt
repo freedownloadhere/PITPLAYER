@@ -1,5 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
@@ -10,5 +11,6 @@ class Start {
     @EventHandler
     fun init(e : FMLInitializationEvent) {
         MinecraftForge.EVENT_BUS.register(EventManager())
+        ClientCommandHandler.instance.registerCommand(PathfindCommand())
     }
 }

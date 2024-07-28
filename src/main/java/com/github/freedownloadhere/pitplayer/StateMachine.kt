@@ -18,7 +18,7 @@ object StateMachine {
 
     fun isInThePit() : Boolean {
         if(!isInHypixel()) return false
-        return ScoreboardReader.contents.lowercase().contains("the pit")
+        return ScoreboardReader.contents.lowercase().contains("the hypixel pit")
     }
 
     fun currentArea() : PitArea {
