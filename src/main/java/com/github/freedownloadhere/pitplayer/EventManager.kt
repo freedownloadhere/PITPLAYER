@@ -26,7 +26,7 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        for(block in GPS.lastPath)
-            Renderer.highlightBlock(Vec3(block.x.toDouble(), block.y.toDouble(), block.z.toDouble()))
+        for(i in 0..<(GPS.lastPath.size - 1))
+            Renderer.highlightLine(GPS.lastPath[i], GPS.lastPath[i + 1])
     }
 }

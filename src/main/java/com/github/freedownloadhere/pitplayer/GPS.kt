@@ -20,10 +20,17 @@ object GPS {
         DirVec3i(Vec3i(0, 0, 1), 10),
         DirVec3i(Vec3i(-1, 0, 0), 10),
         DirVec3i(Vec3i(0, 0, -1), 10),
+
+        DirVec3i(Vec3i(1, 0, 1), 14),
+        DirVec3i(Vec3i(1, 0, -1), 14),
+        DirVec3i(Vec3i(-1, 0, 1), 14),
+        DirVec3i(Vec3i(-1, 0, -1), 14),
+
         DirVec3i(Vec3i(1, 1, 0), 14),
         DirVec3i(Vec3i(0, 1, 1), 14),
         DirVec3i(Vec3i(-1, 1, 0), 14),
         DirVec3i(Vec3i(0, 1, -1), 14),
+
         DirVec3i(Vec3i(1, -1, 0), 14),
         DirVec3i(Vec3i(0, -1, 1), 14),
         DirVec3i(Vec3i(-1, -1, 0), 14),
@@ -32,6 +39,10 @@ object GPS {
 
     private fun manhattan(v1 : Vec3i, v2 : Vec3i) : Int {
         return (abs(v1.x - v2.x) + abs(v1.y - v2.y) + abs(v1.z - v2.z))
+    }
+
+    private fun euclidean(v1 : Vec3i, v2 : Vec3i) : Int {
+        return (v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y) + (v1.z - v2.z) * (v1.z - v2.z)
     }
 
     fun inArea(area : AreaRect) : Boolean {
@@ -65,7 +76,7 @@ object GPS {
         return true
     }
 
-    val lastPath = mutableListOf<Vec3i>()
+    val lastPath = mutableListOf<Vec3>()
 
     fun pathfindTo(dest : Vec3i, start : Vec3i = getPlayerBlockPos()) {
         val p = hashMapOf<Vec3i, PathData>()
@@ -77,7 +88,7 @@ object GPS {
         })
 
         q.add(start)
-        p[start] = PathData(0, manhattan(start, dest) * 10)
+        p[start] = PathData(0, euclidean(start, dest) * 10)
 
         while(!q.isEmpty()) {
             val curr = q.remove()
@@ -87,7 +98,7 @@ object GPS {
                 val cost = p[curr]!!.g + dir.c
                 if(!validPathingBlock(curr, next)) continue
                 if(!p.contains(next)) {
-                    p[next] = PathData(cost, manhattan(next, dest) * 10)
+                    p[next] = PathData(cost, euclidean(next, dest) * 10)
                     p[next]!!.connection = curr
                     q.add(next)
                 }
@@ -99,9 +110,10 @@ object GPS {
                     var v : Vec3i? = dest
                     lastPath.clear()
                     while(v != null && v != start) {
-                        lastPath.add(v)
+                        lastPath.add(Vec3(v.x.toDouble() + 0.5, v.y.toDouble() + 1.0, v.z.toDouble() + 0.5))
                         v = p[v]?.connection
                     }
+                    lastPath.add(player.positionVector)
                     return
                 }
             }
