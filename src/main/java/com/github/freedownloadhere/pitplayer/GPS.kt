@@ -4,6 +4,7 @@ import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLiving
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import java.util.PriorityQueue
 
 object GPS {
@@ -14,6 +15,11 @@ object GPS {
         area.x1 <= player.posX && player.posX <= area.x2 &&
         area.y1 <= player.posY && player.posY <= area.y2 &&
         area.z1 <= player.posZ && player.posZ <= area.z2)
+    }
+
+    fun pathfindTo(dest : Vec3i) {
+        val r = Pathfinder.pathfind(dest, player.positionVector.toVec3i()) ?: return
+        route = r
     }
 
     fun pathfindToNearestEntity() {
@@ -31,7 +37,7 @@ object GPS {
         val playerPos = player.groundedBlockPos?.toVec3() ?: return
         while(entityHeap.isNotEmpty()) {
             val entityPos = entityHeap.remove().groundedBlockPos?.toVec3() ?: continue
-            val entityRoute = Pathfinder.pathfind(entityPos, playerPos) ?: continue
+            val entityRoute = Pathfinder.pathfind(entityPos.toVec3i(), playerPos.toVec3i()) ?: continue
             route = entityRoute
             break
         }

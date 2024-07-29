@@ -5,7 +5,6 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import java.util.*
-import kotlin.math.abs
 
 object Pathfinder {
     private data class DirVec3i(val vec : Vec3i, val cost : Int)
@@ -72,55 +71,47 @@ object Pathfinder {
         return true
     }
 
-    var gCostLimit = 300
+    private data class Node(val pos : Vec3i) {
+        var g = 0
+        var h = 0
+        val f : Int
+            get() = g + h
+        var connection : Node? = null
+    }
 
-    fun pathfind(dest : Vec3, start : Vec3) : MutableList<Vec3>? {
-        return pathfind(dest.toVec3i(), start.toVec3i())
+    private fun makePath(n : Node) : MutableList<Vec3> {
+        val l = mutableListOf<Vec3>()
+        var c : Node? = n
+        while(c != null) {
+            l.add(c.pos.toVec3().add(Vec3(0.5, 1.0, 0.5)))
+            c = c.connection
+        }
+        return l
     }
 
     fun pathfind(dest : Vec3i, start : Vec3i) : MutableList<Vec3>? {
-        val p = hashMapOf<Vec3i, PathData>()
-        val q = PriorityQueue { v1: Vec3i, v2: Vec3i ->
-            Int
-            val p1 = p[v1]!!
-            val p2 = p[v2]!!
-            if (p1.f == p2.f) p1.h - p2.h
-            p1.f - p2.f
+        val nah = mutableSetOf<Vec3i>()
+        val yea = PriorityQueue {
+            n1 : Node, n2 : Node -> Int
+            if(n1.f == n2.f) n1.h - n2.h else n1.f - n2.f
         }
-
-        q.add(start)
-        p[start] = PathData(0, manhattan(start, dest))
-
-        while(!q.isEmpty()) {
-            val curr = q.remove()
-
+        yea.add(Node(start))
+        while(yea.isNotEmpty()) {
+            val current = yea.remove()
+            if(nah.contains(current.pos)) continue
+            nah.add(current.pos)
+            if(current.pos.matches(dest)) { return makePath(current) }
             for(dir in Directions.entries) {
-                val next = curr.add(dir.v.vec)
-                val cost = (p[curr]!!.g + dir.v.cost)
-                if(cost > gCostLimit) continue
-                if(!validPathingBlock(curr, next)) continue
-                if(!p.contains(next)) {
-                    p[next] = PathData(cost, manhattan(next, dest))
-                    p[next]!!.connection = curr
-                    q.add(next)
-                }
-                else if(cost < p[next]!!.g) {
-                    p[next]!!.g = cost
-                    p[next]!!.connection = curr
-                }
-                if(next == dest) {
-                    var v : Vec3i? = dest
-                    val path = mutableListOf<Vec3>()
-                    path.clear()
-                    while(v != null && v != start) {
-                        path.add(Vec3(v.x.toDouble() + 0.5, v.y.toDouble() + 1.0, v.z.toDouble() + 0.5))
-                        v = p[v]?.connection
-                    }
-                    return path
-                }
+                val neighbourPos = current.pos.add(dir.v.vec)
+                if(nah.contains(neighbourPos)) continue
+                if(!validPathingBlock(current.pos, neighbourPos)) continue
+                val neighbour = Node(neighbourPos)
+                neighbour.g = current.g + dir.v.cost
+                neighbour.h = manhattan(neighbourPos, dest)
+                neighbour.connection = current
+                yea.add(neighbour)
             }
         }
-
         return null
     }
 }

@@ -1,5 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
+import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -12,7 +13,7 @@ class EventManager {
     fun tick(e : ClientTickEvent) {
         if(e.phase != TickEvent.Phase.END) return
         if(!StateMachine.isIngame()) return
-        GPS.pathfindToNearestEntity()
+        GPS.pathfindTo(Vec3i(0, 81, 0))
     }
 
     @SubscribeEvent

@@ -35,3 +35,7 @@ fun euclidean(v1 : Vec3i, v2 : Vec3i) : Int {
 fun manhattan(v1 : Vec3i, v2 : Vec3i) : Int {
     return (abs(v1.x - v2.x) + abs(v1.y - v2.y) + abs(v1.z - v2.z))
 }
+
+fun Vec3i.matches(other : Vec3i) : Boolean {
+    return x == other.x && y == other.y && z == other.z
+}
