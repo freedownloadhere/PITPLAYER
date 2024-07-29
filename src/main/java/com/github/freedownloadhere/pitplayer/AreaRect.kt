@@ -1,6 +1,7 @@
 package com.github.freedownloadhere.pitplayer
 
 import net.minecraft.util.Vec3
+import com.github.freedownloadhere.pitplayer.extensions.*
 
 class AreaRect(
     var x1 : Double,
@@ -29,6 +30,6 @@ class AreaRect(
     }
 
     fun contains(pos : Vec3) : Boolean {
-        return pos.xCoord in x1..x2 && pos.yCoord in y1..y2 && pos.zCoord in z1..z2
+        return pos.x in x1..x2 && pos.y in y1..y2 && pos.z in z1..z2
     }
 }

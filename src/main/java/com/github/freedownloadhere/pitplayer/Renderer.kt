@@ -2,6 +2,7 @@ package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
+import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
@@ -34,8 +35,8 @@ object Renderer {
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(i in 0 .. (lines.size - 2)) {
-            worldRenderer.pos(lines[i].xCoord, lines[i].yCoord, lines[i].zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-            worldRenderer.pos(lines[i + 1].xCoord, lines[i + 1].yCoord, lines[i + 1].zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(lines[i].x, lines[i].y, lines[i].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(lines[i + 1].x, lines[i + 1].y, lines[i + 1].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         }
         Tessellator.getInstance().draw()
         highlightLineEnd()
@@ -45,8 +46,8 @@ object Renderer {
         highlightLineBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
-        worldRenderer.pos(p1.xCoord, p1.yCoord, p1.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-        worldRenderer.pos(p2.xCoord, p2.yCoord, p2.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+        worldRenderer.pos(p1.x, p1.y, p1.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+        worldRenderer.pos(p2.x, p2.y, p2.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         Tessellator.getInstance().draw()
         highlightLineEnd()
     }
@@ -82,8 +83,8 @@ object Renderer {
         for(edge in indices) {
             val p1 = corners[edge.first]
             val p2 = corners[edge.second]
-            worldRenderer.pos(p1.xCoord, p1.yCoord, p1.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-            worldRenderer.pos(p2.xCoord, p2.yCoord, p2.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(p1.x, p1.y, p1.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(p2.x, p2.y, p2.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         }
         Tessellator.getInstance().draw()
         highlightLineEnd()

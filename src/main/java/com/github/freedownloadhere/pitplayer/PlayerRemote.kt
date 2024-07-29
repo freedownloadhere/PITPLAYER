@@ -1,9 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
-import com.github.freedownloadhere.pitplayer.extensions.cropAngle180
-import com.github.freedownloadhere.pitplayer.extensions.headPosVector
-import com.github.freedownloadhere.pitplayer.extensions.player
-import com.github.freedownloadhere.pitplayer.extensions.toDegrees
+import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3
 import kotlin.math.atan2
@@ -20,10 +17,10 @@ object PlayerRemote {
     fun lookAt(pos : Vec3) {
         val distance = pos.subtract(player.headPosVector)
         val playerYaw = player.rotationYaw.cropAngle180()
-        val posYaw = -atan2(distance.xCoord, distance.zCoord).toDegrees().toFloat().cropAngle180()
+        val posYaw = -atan2(distance.x, distance.z).toDegrees().toFloat().cropAngle180()
         val deltaYaw = (posYaw - playerYaw).cropAngle180()
         val playerPitch = player.rotationPitch
-        val posPitch = -atan2(distance.yCoord, hypot(distance.xCoord, distance.zCoord)).toDegrees().toFloat()
+        val posPitch = -atan2(distance.y, hypot(distance.x, distance.z)).toDegrees().toFloat()
         val deltaPitch = posPitch - playerPitch
         player.rotationYaw += deltaYaw
         player.rotationPitch += deltaPitch

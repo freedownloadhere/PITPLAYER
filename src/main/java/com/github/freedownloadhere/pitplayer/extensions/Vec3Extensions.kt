@@ -3,14 +3,19 @@ package com.github.freedownloadhere.pitplayer.extensions
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 
+val Vec3.x : Double
+    get() = xCoord
+
+val Vec3.y : Double
+    get() = yCoord
+
+val Vec3.z : Double
+    get() = zCoord
+
 fun Vec3.toVec3i() : Vec3i {
     return Vec3i(
-        if(xCoord >= 0) xCoord.toInt() else xCoord.toInt() - 1,
-        if(yCoord >= 0) yCoord.toInt() else yCoord.toInt() - 1,
-        if(zCoord >= 0) zCoord.toInt() else zCoord.toInt() - 1
+        if(x >= 0) x.toInt() else x.toInt() - 1,
+        if(y >= 0) y.toInt() else y.toInt() - 1,
+        if(z >= 0) z.toInt() else z.toInt() - 1
     )
-}
-
-fun euclidean(v1 : Vec3, v2 : Vec3) : Double {
-    return (v1.xCoord - v2.xCoord) * (v1.xCoord - v2.xCoord) + (v1.yCoord - v2.yCoord) * (v1.yCoord - v2.yCoord) + (v1.zCoord - v2.zCoord) * (v1.zCoord - v2.zCoord)
 }

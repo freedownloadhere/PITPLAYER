@@ -19,7 +19,7 @@ object GPS {
         val pos = player.positionVector
         val entityHeap = PriorityQueue {
             e1 : Entity, e2: Entity -> Int
-            (euclidean(pos, e1.positionVector) - euclidean(pos, e2.positionVector)).toInt()
+            (pos.squareDistanceTo(e1.positionVector) - pos.squareDistanceTo(e2.positionVector)).toInt()
         }
 
         for(entity in world.loadedEntityList) {

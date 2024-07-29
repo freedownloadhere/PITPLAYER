@@ -1,6 +1,5 @@
 package com.github.freedownloadhere.pitplayer
 
-import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
