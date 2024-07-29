@@ -11,7 +11,7 @@ object GPS {
     var route = mutableListOf<Vec3>()
 
     fun pathfindTo(dest : Vec3i) {
-        val r = Pathfinder.pathfind(dest, player.groundedBlockPos ?: return) ?: return
+        val r = Pathfinder.pathfind(dest, player.blockBelow ?: return) ?: return
         route = r
     }
 
@@ -27,10 +27,10 @@ object GPS {
             entityHeap.add(entity)
         }
 
-        val playerPos = player.groundedBlockPos?.toVec3() ?: return
+        val playerPos = player.blockBelow?.toVec3() ?: return
         while(entityHeap.isNotEmpty()) {
-            val entityPos = entityHeap.remove().groundedBlockPos?.toVec3() ?: continue
-            val entityRoute = Pathfinder.pathfind(entityPos.toVec3i(), playerPos.toVec3i()) ?: continue
+            val entityPos = entityHeap.remove().blockBelow?.toVec3() ?: continue
+            val entityRoute = Pathfinder.pathfind(entityPos.toBlockPos(), playerPos.toBlockPos()) ?: continue
             route = entityRoute
             break
         }
