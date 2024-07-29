@@ -18,7 +18,7 @@ object GPS {
     }
 
     fun pathfindTo(dest : Vec3i) {
-        val r = Pathfinder.pathfind(dest, player.positionVector.toVec3i()) ?: return
+        val r = Pathfinder.pathfind(dest, player.groundedBlockPos ?: return) ?: return
         route = r
     }
 
