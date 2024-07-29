@@ -14,8 +14,8 @@ object StateMachine {
     fun isInHypixel() : Boolean {
         if(!isIngame()) return false
         if(mc.isSingleplayer) return false
-        if(!mc.currentServerData.serverIP.lowercase().contains("hypixel")) return false;
-        return true;
+        if(!mc.currentServerData.serverIP.lowercase().contains("hypixel")) return false
+        return true
     }
 
     fun isInThePit() : Boolean {
@@ -27,7 +27,7 @@ object StateMachine {
         val playerPos = player.positionVector
         for(area in PitArea.entries)
             if(area.rect.contains(playerPos))
-                return area;
+                return area
         return PitArea.UNKNOWN
     }
 }
