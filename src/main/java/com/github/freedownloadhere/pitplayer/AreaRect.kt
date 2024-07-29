@@ -1,5 +1,7 @@
 package com.github.freedownloadhere.pitplayer
 
+import net.minecraft.util.Vec3
+
 class AreaRect(
     var x1 : Double,
     var y1 : Double,
@@ -24,5 +26,9 @@ class AreaRect(
             z1 = z2
             z2 = zswap
         }
+    }
+
+    fun contains(pos : Vec3) : Boolean {
+        return pos.xCoord in x1..x2 && pos.yCoord in y1..y2 && pos.zCoord in z1..z2
     }
 }

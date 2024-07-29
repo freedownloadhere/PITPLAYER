@@ -1,6 +1,7 @@
 package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.extensions.mc
+import com.github.freedownloadhere.pitplayer.extensions.player
 import net.minecraft.client.Minecraft
 
 object StateMachine {
@@ -23,8 +24,9 @@ object StateMachine {
     }
 
     fun currentArea() : PitArea {
+        val playerPos = player.positionVector
         for(area in PitArea.entries)
-            if(GPS.inArea(area.rect))
+            if(area.rect.contains(playerPos))
                 return area;
         return PitArea.UNKNOWN
     }

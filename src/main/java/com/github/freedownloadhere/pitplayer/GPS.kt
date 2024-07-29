@@ -10,13 +10,6 @@ import java.util.PriorityQueue
 object GPS {
     var route = mutableListOf<Vec3>()
 
-    fun inArea(area : AreaRect) : Boolean {
-        return (
-        area.x1 <= player.posX && player.posX <= area.x2 &&
-        area.y1 <= player.posY && player.posY <= area.y2 &&
-        area.z1 <= player.posZ && player.posZ <= area.z2)
-    }
-
     fun pathfindTo(dest : Vec3i) {
         val r = Pathfinder.pathfind(dest, player.groundedBlockPos ?: return) ?: return
         route = r

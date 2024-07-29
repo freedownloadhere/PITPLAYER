@@ -4,8 +4,11 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.multiplayer.WorldClient
 
-val mc: Minecraft = Minecraft.getMinecraft()
+val mc: Minecraft
+    get() = Minecraft.getMinecraft()
 
-val player : EntityPlayerSP = mc.thePlayer
+val player : EntityPlayerSP
+    get() = Minecraft.getMinecraft().thePlayer
 
-val world : WorldClient = mc.theWorld
+val world : WorldClient
+    get() = Minecraft.getMinecraft().theWorld
