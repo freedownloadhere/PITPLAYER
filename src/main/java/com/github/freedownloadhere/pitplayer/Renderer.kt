@@ -30,24 +30,24 @@ object Renderer {
         GL11.glPopMatrix()
     }
 
-    fun highlightNLines(lines : List<Vec3>) {
-        highlightLineBegin()
-        val worldRenderer = Tessellator.getInstance().worldRenderer
-        worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
-        for(i in 0 .. (lines.size - 2)) {
-            worldRenderer.pos(lines[i].x, lines[i].y, lines[i].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-            worldRenderer.pos(lines[i + 1].x, lines[i + 1].y, lines[i + 1].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-        }
-        Tessellator.getInstance().draw()
-        highlightLineEnd()
-    }
-
     fun highlightLine(p1 : Vec3, p2 : Vec3) {
         highlightLineBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         worldRenderer.pos(p1.x, p1.y, p1.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         worldRenderer.pos(p2.x, p2.y, p2.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+        Tessellator.getInstance().draw()
+        highlightLineEnd()
+    }
+
+    fun highlightNLines(posList : List<Vec3>) {
+        highlightLineBegin()
+        val worldRenderer = Tessellator.getInstance().worldRenderer
+        worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
+        for(i in 0 .. (posList.size - 2)) {
+            worldRenderer.pos(posList[i].x, posList[i].y, posList[i].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(posList[i + 1].x, posList[i + 1].y, posList[i + 1].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+        }
         Tessellator.getInstance().draw()
         highlightLineEnd()
     }
@@ -88,5 +88,10 @@ object Renderer {
         }
         Tessellator.getInstance().draw()
         highlightLineEnd()
+    }
+
+    fun highlightNBlocks(posList : List<Vec3>) {
+        for(pos in posList)
+            highlightBlock(pos.toBlockPos().toVec3())
     }
 }

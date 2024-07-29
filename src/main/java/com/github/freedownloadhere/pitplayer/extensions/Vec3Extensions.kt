@@ -16,3 +16,7 @@ val Vec3.z : Double
 fun Vec3.toBlockPos() : Vec3i {
     return Vec3i(floor(x).toInt(), floor(y).toInt(), floor(z).toInt())
 }
+
+fun Vec3.add(x1 : Double, y1 : Double, z1 : Double) : Vec3 {
+    return Vec3(x + x1, y + y1, z + z1)
+}

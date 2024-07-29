@@ -24,6 +24,7 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        Renderer.highlightNLines(GPS.route)
+        //Renderer.highlightNLines(GPS.route)
+        Renderer.highlightNBlocks(GPS.route)
     }
 }

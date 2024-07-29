@@ -48,11 +48,25 @@ object Pathfinder {
         return true
     }
 
+    private fun makeSimple(n : Node) : MutableList<Vec3> {
+        val l = mutableListOf<Vec3>()
+        var c : Node? = n
+        var delta1 = Vec3i(0, 0, 0)
+        while(c?.next != null) {
+            val delta2 = c.pos.subtract(c.next!!.pos)
+            if(delta1.matches(delta2)) { c = c.next; continue }
+            delta1 = delta2
+            l.add(c.pos.toVec3().add(0.5, 1.0, 0.5))
+            c = c.next
+        }
+        return l
+    }
+
     private fun makePath(n : Node) : MutableList<Vec3> {
         val l = mutableListOf<Vec3>()
         var c : Node? = n
         while(c != null) {
-            l.add(c.pos.toVec3().add(Vec3(0.5, 1.0, 0.5)))
+            l.add(c.pos.toVec3().add(0.5, 1.0, 0.5))
             c = c.next
         }
         return l
@@ -69,12 +83,12 @@ object Pathfinder {
             val c = yea.remove()
             if(nah.contains(c.pos)) continue
             nah.add(c.pos)
-            if(c.pos.matches(dest)) { return makePath(c) }
+            if(c.pos.matches(dest)) { return makeSimple(c) }
             for(d in Directions.entries) {
                 val npos = c.pos.add(d.vec)
                 if(nah.contains(npos)) continue
                 if(!isValid(c.pos, npos)) continue
-                val n = Node(npos, c.g + d.cost, manhattan(npos, dest), c)
+                val n = Node(npos, c.g + d.cost, npos.manhattan(dest), c)
                 yea.add(n)
             }
         }

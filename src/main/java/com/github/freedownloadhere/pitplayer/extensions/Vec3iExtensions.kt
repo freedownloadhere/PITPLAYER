@@ -12,6 +12,10 @@ fun Vec3i.add(x1 : Int, y1 : Int, z1 : Int) : Vec3i {
     return Vec3i(x + x1, y + y1, z + z1)
 }
 
+fun Vec3i.subtract(other : Vec3i) : Vec3i {
+    return Vec3i(x - other.x, y - other.y, z - other.z)
+}
+
 val Vec3i.downOne : Vec3i
     get() = Vec3i(x, y - 1, z)
 
@@ -28,12 +32,8 @@ fun Vec3i.toVec3() : Vec3 {
     return Vec3(x.toDouble(), y.toDouble(), z.toDouble())
 }
 
-fun euclidean(v1 : Vec3i, v2 : Vec3i) : Int {
-    return (v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y) + (v1.z - v2.z) * (v1.z - v2.z)
-}
-
-fun manhattan(v1 : Vec3i, v2 : Vec3i) : Int {
-    return (abs(v1.x - v2.x) + abs(v1.y - v2.y) + abs(v1.z - v2.z))
+fun Vec3i.manhattan(other : Vec3i) : Int {
+    return (abs(x - other.x) + abs(y - other.y) + abs(z - other.z))
 }
 
 fun Vec3i.matches(other : Vec3i) : Boolean {
