@@ -12,8 +12,7 @@ class EventManager {
     fun tick(e : ClientTickEvent) {
         if(e.phase != TickEvent.Phase.END) return
         if(!StateMachine.isIngame()) return
-        // GPS.pathfindTo(Vec3i(0, 81, 0))
-        // GPS.followPath()
+        GPS.pathfindToNearestEntity()
     }
 
     @SubscribeEvent
@@ -25,6 +24,6 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        Renderer.highlightNLines(GPS.path)
+        Renderer.highlightNLines(GPS.route)
     }
 }

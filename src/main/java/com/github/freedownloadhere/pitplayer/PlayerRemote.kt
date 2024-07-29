@@ -1,6 +1,9 @@
 package com.github.freedownloadhere.pitplayer
 
-import net.minecraft.client.Minecraft
+import com.github.freedownloadhere.pitplayer.extensions.cropAngle180
+import com.github.freedownloadhere.pitplayer.extensions.headPosVector
+import com.github.freedownloadhere.pitplayer.extensions.player
+import com.github.freedownloadhere.pitplayer.extensions.toDegrees
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3
 import kotlin.math.atan2

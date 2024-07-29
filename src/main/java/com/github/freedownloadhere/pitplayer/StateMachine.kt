@@ -1,5 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
+import com.github.freedownloadhere.pitplayer.extensions.mc
 import net.minecraft.client.Minecraft
 
 object StateMachine {

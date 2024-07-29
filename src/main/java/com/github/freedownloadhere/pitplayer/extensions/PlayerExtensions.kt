@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.extensions
 
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.util.Vec3

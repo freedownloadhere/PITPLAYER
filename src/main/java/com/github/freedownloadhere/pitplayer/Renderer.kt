@@ -1,5 +1,7 @@
 package com.github.freedownloadhere.pitplayer
 
+import com.github.freedownloadhere.pitplayer.extensions.mc
+import com.github.freedownloadhere.pitplayer.extensions.player
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
