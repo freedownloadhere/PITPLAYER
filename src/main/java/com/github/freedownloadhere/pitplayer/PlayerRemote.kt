@@ -19,6 +19,7 @@ object PlayerRemote {
         val playerYaw = player.rotationYaw.cropAngle180()
         val posYaw = -atan2(distance.x, distance.z).toDegrees().toFloat().cropAngle180()
         val deltaYaw = (posYaw - playerYaw).cropAngle180()
+        if(deltaYaw >= 90.0f) return
         val playerPitch = player.rotationPitch
         val posPitch = -atan2(distance.y, hypot(distance.x, distance.z)).toDegrees().toFloat()
         val deltaPitch = posPitch - playerPitch

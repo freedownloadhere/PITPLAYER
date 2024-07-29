@@ -12,7 +12,9 @@ object GPS {
 
     fun pathfindTo(dest : Vec3i) {
         val r = Pathfinder.pathfind(dest, player.blockBelow ?: return) ?: return
+        if(r.isEmpty()) return
         route = r
+        PlayerRemote.lookAt(route.last().toPlayerHead())
     }
 
     fun pathfindToNearestEntity() {

@@ -56,7 +56,7 @@ object Pathfinder {
             val delta2 = c.pos.subtract(c.next!!.pos)
             if(delta1.matches(delta2)) { c = c.next; continue }
             delta1 = delta2
-            l.add(c.pos.toVec3().add(0.5, 1.0, 0.5))
+            l.add(c.pos.toVec3().toBlockTop())
             c = c.next
         }
         return l
@@ -66,7 +66,7 @@ object Pathfinder {
         val l = mutableListOf<Vec3>()
         var c : Node? = n
         while(c != null) {
-            l.add(c.pos.toVec3().add(0.5, 1.0, 0.5))
+            l.add(c.pos.toVec3().toBlockTop())
             c = c.next
         }
         return l
