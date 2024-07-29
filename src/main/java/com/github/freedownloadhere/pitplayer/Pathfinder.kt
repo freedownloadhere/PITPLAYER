@@ -7,37 +7,31 @@ import net.minecraft.util.Vec3i
 import java.util.*
 
 object Pathfinder {
-    private data class DirVec3i(val vec : Vec3i, val cost : Int)
-    private data class PathData(var g : Int, var h : Int) {
-        var connection : Vec3i? = null
-        val f : Int
-            get() = g + h
-    }
-    private enum class Directions(val v : DirVec3i) {
-        PX(DirVec3i(Vec3i(1, 0, 0), 10)),
-        PZ(DirVec3i(Vec3i(0, 0, 1), 10)),
-        NX(DirVec3i(Vec3i(-1, 0, 0), 10)),
-        NZ(DirVec3i(Vec3i(0, 0, -1), 10)),
+    private enum class Directions(val vec : Vec3i, val cost : Int) {
+        PX(Vec3i(1, 0, 0), 10),
+        PZ(Vec3i(0, 0, 1), 10),
+        NX(Vec3i(-1, 0, 0), 10),
+        NZ(Vec3i(0, 0, -1), 10),
 
-        DiagPXPZ(DirVec3i(Vec3i(1, 0, 1), 14)),
-        DiagPXNZ(DirVec3i(Vec3i(1, 0, -1), 14)),
-        DiagNXPZ(DirVec3i(Vec3i(-1, 0, 1), 14)),
-        DiagNXNZ(DirVec3i(Vec3i(-1, 0, -1), 14)),
+        DiagPXPZ(Vec3i(1, 0, 1), 14),
+        DiagPXNZ(Vec3i(1, 0, -1), 14),
+        DiagNXPZ(Vec3i(-1, 0, 1), 14),
+        DiagNXNZ(Vec3i(-1, 0, -1), 14),
 
-        UpPX(DirVec3i(Vec3i(1, 1, 0), 20)),
-        UpPZ(DirVec3i(Vec3i(0, 1, 1), 20)),
-        UpNX(DirVec3i(Vec3i(-1, 1, 0), 20)),
-        UpNZ(DirVec3i(Vec3i(0, 1, -1), 20)),
+        UpPX(Vec3i(1, 1, 0), 20),
+        UpPZ(Vec3i(0, 1, 1), 20),
+        UpNX(Vec3i(-1, 1, 0), 20),
+        UpNZ(Vec3i(0, 1, -1), 20),
 
-        DownPX(DirVec3i(Vec3i(1, -1, 0), 14)),
-        DownPZ(DirVec3i(Vec3i(0, -1, 1), 14)),
-        DownNX(DirVec3i(Vec3i(-1, -1, 0), 14)),
-        DownNZ(DirVec3i(Vec3i(0, -1, -1), 14)),
+        DownPX(Vec3i(1, -1, 0), 14),
+        DownPZ(Vec3i(0, -1, 1), 14),
+        DownNX(Vec3i(-1, -1, 0), 14),
+        DownNZ(Vec3i(0, -1, -1), 14),
 
-        DiagDownPXPZ(DirVec3i(Vec3i(1, -1, 1), 18)),
-        DiagDownPXNZ(DirVec3i(Vec3i(1, -1, -1), 18)),
-        DiagDownNXPZ(DirVec3i(Vec3i(-1, -1, 1), 18)),
-        DiagDownNXNZ(DirVec3i(Vec3i(-1, -1, -1), 18)),
+        DiagDownPXPZ(Vec3i(1, -1, 1), 18),
+        DiagDownPXNZ(Vec3i(1, -1, -1), 18),
+        DiagDownNXPZ(Vec3i(-1, -1, 1), 18),
+        DiagDownNXNZ(Vec3i(-1, -1, -1), 18),
     }
 
     private fun blockIsSolid(pos : Vec3i) : Boolean {
@@ -71,12 +65,9 @@ object Pathfinder {
         return true
     }
 
-    private data class Node(val pos : Vec3i) {
-        var g = 0
-        var h = 0
+    private data class Node(val pos : Vec3i, val g : Int = 0, val h : Int = 0, val next : Node? = null) {
         val f : Int
             get() = g + h
-        var connection : Node? = null
     }
 
     private fun makePath(n : Node) : MutableList<Vec3> {
@@ -84,7 +75,7 @@ object Pathfinder {
         var c : Node? = n
         while(c != null) {
             l.add(c.pos.toVec3().add(Vec3(0.5, 1.0, 0.5)))
-            c = c.connection
+            c = c.next
         }
         return l
     }
@@ -97,21 +88,19 @@ object Pathfinder {
         }
         yea.add(Node(start))
         while(yea.isNotEmpty()) {
-            val current = yea.remove()
-            if(nah.contains(current.pos)) continue
-            nah.add(current.pos)
-            if(current.pos.matches(dest)) { return makePath(current) }
-            for(dir in Directions.entries) {
-                val neighbourPos = current.pos.add(dir.v.vec)
-                if(nah.contains(neighbourPos)) continue
-                if(!validPathingBlock(current.pos, neighbourPos)) continue
-                val neighbour = Node(neighbourPos)
-                neighbour.g = current.g + dir.v.cost
-                neighbour.h = manhattan(neighbourPos, dest)
-                neighbour.connection = current
-                yea.add(neighbour)
+            val c = yea.remove()
+            if(nah.contains(c.pos)) continue
+            nah.add(c.pos)
+            if(c.pos.matches(dest)) { return makePath(c) }
+            for(d in Directions.entries) {
+                val npos = c.pos.add(d.vec)
+                if(nah.contains(npos)) continue
+                if(!validPathingBlock(c.pos, npos)) continue
+                val n = Node(npos, c.g + d.cost, manhattan(npos, dest), c)
+                yea.add(n)
             }
         }
         return null
     }
+
 }
