@@ -1,7 +1,5 @@
 package com.github.freedownloadhere.pitplayer
 
-import net.minecraft.scoreboard.Score
-import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -14,7 +12,8 @@ class EventManager {
     fun tick(e : ClientTickEvent) {
         if(e.phase != TickEvent.Phase.END) return
         if(!StateMachine.isIngame()) return
-        GPS.pathfindTo(Vec3i(0, 81, 0))
+        // GPS.pathfindTo(Vec3i(0, 81, 0))
+        // GPS.followPath()
     }
 
     @SubscribeEvent
@@ -26,7 +25,6 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        for(i in 0..<(GPS.lastPath.size - 1))
-            Renderer.highlightLine(GPS.lastPath[i], GPS.lastPath[i + 1])
+        Renderer.highlightNLines(GPS.path)
     }
 }

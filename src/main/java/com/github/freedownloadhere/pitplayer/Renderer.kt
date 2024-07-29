@@ -1,6 +1,5 @@
 package com.github.freedownloadhere.pitplayer
 
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
@@ -11,7 +10,7 @@ object Renderer {
         mc.fontRendererObj.drawStringWithShadow(s, x.toFloat(), y.toFloat(), 0x00ffffff)
     }
 
-    fun highlightLine(p1 : Vec3, p2 : Vec3) {
+    private fun highlightLineBegin() {
         GL11.glPushMatrix()
         GL11.glTranslated(-player.posX, -player.posY, -player.posZ)
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
@@ -20,14 +19,34 @@ object Renderer {
         GL11.glDepthFunc(GL11.GL_ALWAYS)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+    }
+
+    private fun highlightLineEnd() {
+        GL11.glPopAttrib()
+        GL11.glDepthFunc(GL11.GL_LEQUAL)
+        GL11.glPopMatrix()
+    }
+
+    fun highlightNLines(lines : List<Vec3>) {
+        highlightLineBegin()
+        val worldRenderer = Tessellator.getInstance().worldRenderer
+        worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
+        for(i in 0 .. (lines.size - 2)) {
+            worldRenderer.pos(lines[i].xCoord, lines[i].yCoord, lines[i].zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(lines[i + 1].xCoord, lines[i + 1].yCoord, lines[i + 1].zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+        }
+        Tessellator.getInstance().draw()
+        highlightLineEnd()
+    }
+
+    fun highlightLine(p1 : Vec3, p2 : Vec3) {
+        highlightLineBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         worldRenderer.pos(p1.xCoord, p1.yCoord, p1.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         worldRenderer.pos(p2.xCoord, p2.yCoord, p2.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         Tessellator.getInstance().draw()
-        GL11.glPopAttrib()
-        GL11.glDepthFunc(GL11.GL_LEQUAL)
-        GL11.glPopMatrix()
+        highlightLineEnd()
     }
 
     fun highlightBlock(pos : Vec3) {
@@ -55,13 +74,7 @@ object Renderer {
             Pair(6, 7),
             Pair(7, 4)
         )
-        GL11.glPushMatrix()
-        GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glDepthFunc(GL11.GL_ALWAYS)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glTranslated(-player.posX, -player.posY, -player.posZ)
+        highlightLineBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(edge in indices) {
@@ -71,9 +84,6 @@ object Renderer {
             worldRenderer.pos(p2.xCoord, p2.yCoord, p2.zCoord).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
         }
         Tessellator.getInstance().draw()
-        GL11.glPopAttrib()
-        GL11.glDepthFunc(GL11.GL_LEQUAL)
-        GL11.glPopMatrix()
+        highlightLineEnd()
     }
-
 }

@@ -1,6 +1,5 @@
 package com.github.freedownloadhere.pitplayer
 
-import net.minecraft.block.Block
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -8,34 +7,38 @@ import java.util.PriorityQueue
 import kotlin.math.abs
 
 object GPS {
-    data class DirVec3i(val d : Vec3i, val c : Int)
-    data class PathData(var g : Int = 9999999, var h : Int) {
+    private data class DirVec3i(val vec : Vec3i, val cost : Int)
+    private data class PathData(var g : Int, var h : Int) {
         var connection : Vec3i? = null
         val f : Int
             get() = g + h
     }
+    private enum class Directions(val v : DirVec3i) {
+        PX(DirVec3i(Vec3i(1, 0, 0), 10)),
+        PZ(DirVec3i(Vec3i(0, 0, 1), 10)),
+        NX(DirVec3i(Vec3i(-1, 0, 0), 10)),
+        NZ(DirVec3i(Vec3i(0, 0, -1), 10)),
 
-    private val directions = arrayListOf(
-        DirVec3i(Vec3i(1, 0, 0), 10),
-        DirVec3i(Vec3i(0, 0, 1), 10),
-        DirVec3i(Vec3i(-1, 0, 0), 10),
-        DirVec3i(Vec3i(0, 0, -1), 10),
+        DiagPXPZ(DirVec3i(Vec3i(1, 0, 1), 14)),
+        DiagPXNZ(DirVec3i(Vec3i(1, 0, -1), 14)),
+        DiagNXPZ(DirVec3i(Vec3i(-1, 0, 1), 14)),
+        DiagNXNZ(DirVec3i(Vec3i(-1, 0, -1), 14)),
 
-        DirVec3i(Vec3i(1, 0, 1), 14),
-        DirVec3i(Vec3i(1, 0, -1), 14),
-        DirVec3i(Vec3i(-1, 0, 1), 14),
-        DirVec3i(Vec3i(-1, 0, -1), 14),
+        UpPX(DirVec3i(Vec3i(1, 1, 0), 20)),
+        UpPZ(DirVec3i(Vec3i(0, 1, 1), 20)),
+        UpNX(DirVec3i(Vec3i(-1, 1, 0), 20)),
+        UpNZ(DirVec3i(Vec3i(0, 1, -1), 20)),
 
-        DirVec3i(Vec3i(1, 1, 0), 14),
-        DirVec3i(Vec3i(0, 1, 1), 14),
-        DirVec3i(Vec3i(-1, 1, 0), 14),
-        DirVec3i(Vec3i(0, 1, -1), 14),
+        DownPX(DirVec3i(Vec3i(1, -1, 0), 14)),
+        DownPZ(DirVec3i(Vec3i(0, -1, 1), 14)),
+        DownNX(DirVec3i(Vec3i(-1, -1, 0), 14)),
+        DownNZ(DirVec3i(Vec3i(0, -1, -1), 14)),
 
-        DirVec3i(Vec3i(1, -1, 0), 14),
-        DirVec3i(Vec3i(0, -1, 1), 14),
-        DirVec3i(Vec3i(-1, -1, 0), 14),
-        DirVec3i(Vec3i(0, -1, -1), 14),
-    )
+        DiagDownPXPZ(DirVec3i(Vec3i(1, -1, 1), 18)),
+        DiagDownPXNZ(DirVec3i(Vec3i(1, -1, -1), 18)),
+        DiagDownNXPZ(DirVec3i(Vec3i(-1, -1, 1), 18)),
+        DiagDownNXNZ(DirVec3i(Vec3i(-1, -1, -1), 18)),
+    }
 
     private fun manhattan(v1 : Vec3i, v2 : Vec3i) : Int {
         return (abs(v1.x - v2.x) + abs(v1.y - v2.y) + abs(v1.z - v2.z))
@@ -45,15 +48,15 @@ object GPS {
         return (v1.x - v2.x) * (v1.x - v2.x) + (v1.y - v2.y) * (v1.y - v2.y) + (v1.z - v2.z) * (v1.z - v2.z)
     }
 
+    private fun withinError(v1 : Vec3, v2 : Vec3, error : Double) : Boolean {
+        return (abs(v1.xCoord - v2.xCoord) <= error && abs(v1.yCoord - v2.yCoord) <= error && abs(v1.zCoord - v2.zCoord) <= error)
+    }
+
     fun inArea(area : AreaRect) : Boolean {
         return (
         area.x1 <= player.posX && player.posX <= area.x2 &&
         area.y1 <= player.posY && player.posY <= area.y2 &&
         area.z1 <= player.posZ && player.posZ <= area.z2)
-    }
-
-    fun getPlayerPos() : Vec3 {
-        return Vec3(player.posX, player.posY, player.posZ)
     }
 
     fun getPlayerBlockPos() : Vec3i {
@@ -64,41 +67,65 @@ object GPS {
         )
     }
 
-    fun blockIsSolid(pos : Vec3i) : Boolean {
-        return world.getBlockState(BlockPos(pos.x, pos.y, pos.z)).block.material.isSolid
+    private fun blockIsSolid(pos : Vec3i) : Boolean {
+        val block = world.getBlockState(BlockPos(pos.x, pos.y, pos.z)).block.material
+        return block.isSolid && !block.isLiquid
     }
 
-    fun validPathingBlock(curr : Vec3i, next : Vec3i) : Boolean {
-        if(!blockIsSolid(next)) return false
-        if(blockIsSolid(next.add(Vec3i(0, 1, 0))) || blockIsSolid(next.add(Vec3i(0, 2, 0)))) return false
-        if(next.y == curr.y + 1 && blockIsSolid(curr.add(Vec3i(0, 3, 0)))) return false
-        if(next.y == curr.y - 1 && blockIsSolid(next.add(Vec3i(0, 3, 0)))) return false
+    private fun blockIsNotSolid(pos : Vec3i) : Boolean {
+        return !blockIsSolid(pos)
+    }
+
+    private fun isObstructed(pos : Vec3i) : Boolean {
+        return blockIsSolid(pos.upOne) || blockIsSolid(pos.upTwo)
+    }
+
+    private fun isNotObstructed(pos : Vec3i) : Boolean {
+        return !isObstructed(pos)
+    }
+
+    private fun isWalkable(pos : Vec3i) : Boolean {
+        return blockIsSolid(pos) && isNotObstructed(pos)
+    }
+
+    private fun isNotWalkable(pos : Vec3i) : Boolean {
+        return !isWalkable(pos)
+    }
+
+    private fun validPathingBlock(curr : Vec3i, next : Vec3i) : Boolean {
+        if(isNotWalkable(next)) return false
+        //if(next.x - curr.x != 0 && next.z - curr.z != 0)
+            //if(isObstructed(Vec3i(curr.x, next.y, next.z)) || isObstructed(Vec3i(next.x, next.y, curr.z)))
+                //return false
+        if(next.y == curr.y + 1 && blockIsSolid(curr.upThree)) return false
+        if(next.y == curr.y - 1 && blockIsSolid(next.upThree)) return false
         return true
     }
 
-    val lastPath = mutableListOf<Vec3>()
+    val path = mutableListOf<Vec3>()
 
     fun pathfindTo(dest : Vec3i, start : Vec3i = getPlayerBlockPos()) {
         val p = hashMapOf<Vec3i, PathData>()
-        val q = PriorityQueue(Comparator { v1 : Vec3i, v2 : Vec3i -> Int
+        val q = PriorityQueue { v1: Vec3i, v2: Vec3i ->
+            Int
             val p1 = p[v1]!!
             val p2 = p[v2]!!
-            if(p1.f == p2.f)  p1.h - p2.h
+            if (p1.f == p2.f) p1.h - p2.h
             p1.f - p2.f
-        })
+        }
 
         q.add(start)
-        p[start] = PathData(0, euclidean(start, dest) * 10)
+        p[start] = PathData(0, manhattan(start, dest))
 
         while(!q.isEmpty()) {
             val curr = q.remove()
 
-            for(dir in directions) {
-                val next = curr.add(dir.d)
-                val cost = p[curr]!!.g + dir.c
+            for(dir in Directions.entries) {
+                val next = curr.add(dir.v.vec)
+                val cost = (p[curr]!!.g + dir.v.cost)
                 if(!validPathingBlock(curr, next)) continue
                 if(!p.contains(next)) {
-                    p[next] = PathData(cost, euclidean(next, dest) * 10)
+                    p[next] = PathData(cost, manhattan(next, dest))
                     p[next]!!.connection = curr
                     q.add(next)
                 }
@@ -108,15 +135,22 @@ object GPS {
                 }
                 if(next == dest) {
                     var v : Vec3i? = dest
-                    lastPath.clear()
+                    path.clear()
                     while(v != null && v != start) {
-                        lastPath.add(Vec3(v.x.toDouble() + 0.5, v.y.toDouble() + 1.0, v.z.toDouble() + 0.5))
+                        path.add(Vec3(v.x.toDouble() + 0.5, v.y.toDouble() + 1.0, v.z.toDouble() + 0.5))
                         v = p[v]?.connection
                     }
-                    lastPath.add(player.positionVector)
                     return
                 }
             }
         }
+    }
+
+    fun followPath() {
+        if(path.isEmpty()) return
+        if(withinError(path.last(), player.positionVector, 1.5))
+            path.removeLast()
+        if(path.isEmpty()) return
+        PlayerRemote.lookAt(path.last().addVector(0.0, 1.625, 0.0))
     }
 }
