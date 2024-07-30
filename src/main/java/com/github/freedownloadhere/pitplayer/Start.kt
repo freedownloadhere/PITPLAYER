@@ -13,6 +13,7 @@ class Start {
     fun init(e : FMLInitializationEvent) {
         MinecraftForge.EVENT_BUS.register(EventManager())
         ClientCommandHandler.instance.registerCommand(PathfindCommand())
+        ClientCommandHandler.instance.registerCommand(SetActionCommand())
         for(k in Keybinds.entries)
             ClientRegistry.registerKeyBinding(k.key)
     }

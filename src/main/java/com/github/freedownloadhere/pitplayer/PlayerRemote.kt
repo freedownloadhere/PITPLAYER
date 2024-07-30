@@ -6,7 +6,10 @@ import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
 
-object AutoPilot {
+object PlayerRemote {
+    val state : String
+        get() = "\u00A7lRemote: \u00A7${if(isEnabled) "aYes" else "cNo"}"
+
     var isEnabled : Boolean = true
     var isWalking : Boolean = false
     var isJumping : Boolean = false
@@ -14,9 +17,9 @@ object AutoPilot {
     fun toggle() {
         isEnabled = !isEnabled
         if(isEnabled) return
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.keyCode, false)
+        mc.gameSettings.keyBindForward.release()
         isWalking = false
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
+        mc.gameSettings.keyBindJump.release()
         isJumping = false
     }
 
@@ -31,7 +34,6 @@ object AutoPilot {
         val playerYaw = player.rotationYaw.cropAngle180()
         val posYaw = -atan2(distance.x, distance.z).toDegrees().toFloat().cropAngle180()
         val deltaYaw = (posYaw - playerYaw).cropAngle180()
-        if(deltaYaw >= 90.0f) return
         player.rotationYaw += deltaYaw
     }
 
@@ -52,25 +54,30 @@ object AutoPilot {
 
     fun walkForward() {
         if(!isEnabled) return
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.keyCode, true)
+        mc.gameSettings.keyBindForward.hold()
         isWalking = true
     }
 
     fun stopWalking() {
         if(!isEnabled) return
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindForward.keyCode, false)
+        mc.gameSettings.keyBindForward.release()
         isWalking = false
     }
 
     fun jump() {
         if(!isEnabled) return
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, true)
+        mc.gameSettings.keyBindJump.hold()
         isJumping = true
     }
 
     fun stopJumping() {
         if(!isEnabled) return
-        KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
+        mc.gameSettings.keyBindJump.release()
         isJumping = false
+    }
+
+    fun attack() {
+        if(!isEnabled) return
+        mc.gameSettings.keyBindAttack.press()
     }
 }

@@ -5,6 +5,14 @@ import com.github.freedownloadhere.pitplayer.extensions.player
 import net.minecraft.client.Minecraft
 
 object StateMachine {
+    enum class PlayerAction {
+        Idle,
+        Wandering,
+        Fighting
+    }
+
+    var currentAction = PlayerAction.Idle
+
     fun isIngame() : Boolean {
         if(Minecraft.getMinecraft().thePlayer == null) return false
         if(Minecraft.getMinecraft().theWorld == null) return false

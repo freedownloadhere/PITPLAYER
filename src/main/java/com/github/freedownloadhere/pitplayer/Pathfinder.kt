@@ -48,7 +48,7 @@ object Pathfinder {
         return true
     }
 
-    private fun makeSimple(n : Node) : MutableList<Vec3> {
+    private fun makeSimple(n : Node) : MutableList<Vec3>? {
         val l = mutableListOf<Vec3>()
         var c : Node? = n
         var delta1 = Vec3i(0, 0, 0)
@@ -59,20 +59,11 @@ object Pathfinder {
             l.add(c.pos.toVec3().toBlockTop())
             c = c.next
         }
-        return l
+        return if(l.isEmpty()) null else l
     }
 
-    private fun makePath(n : Node) : MutableList<Vec3> {
-        val l = mutableListOf<Vec3>()
-        var c : Node? = n
-        while(c != null) {
-            l.add(c.pos.toVec3().toBlockTop())
-            c = c.next
-        }
-        return l
-    }
-
-    fun pathfind(dest : Vec3i, start : Vec3i) : MutableList<Vec3>? {
+    fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
+        if(dest == null || start == null) return null
         val nah = mutableSetOf<Vec3i>()
         val yea = PriorityQueue {
             n1 : Node, n2 : Node -> Int
