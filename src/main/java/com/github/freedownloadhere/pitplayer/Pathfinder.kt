@@ -6,36 +6,36 @@ import net.minecraft.util.Vec3i
 import java.util.*
 
 object Pathfinder {
-    private data class Node(val pos : Vec3i, val g : Int = 0, val h : Int = 0, val next : Node? = null) {
-        val f : Int
+    private data class Node(val pos : Vec3i, val g : Double = 0.0, val h : Double = 0.0, val next : Node? = null) {
+        val f : Double
             get() = g + h
     }
 
-    private enum class Directions(val vec : Vec3i, val cost : Int) {
-        PX(Vec3i(1, 0, 0), 10),
-        PZ(Vec3i(0, 0, 1), 10),
-        NX(Vec3i(-1, 0, 0), 10),
-        NZ(Vec3i(0, 0, -1), 10),
+    private enum class Directions(val vec : Vec3i, val cost : Double) {
+        PX(Vec3i(1, 0, 0), 1.0),
+        PZ(Vec3i(0, 0, 1), 1.0),
+        NX(Vec3i(-1, 0, 0), 1.0),
+        NZ(Vec3i(0, 0, -1), 1.0),
 
-        DiagPXPZ(Vec3i(1, 0, 1), 14),
-        DiagPXNZ(Vec3i(1, 0, -1), 14),
-        DiagNXPZ(Vec3i(-1, 0, 1), 14),
-        DiagNXNZ(Vec3i(-1, 0, -1), 14),
+        DiagPXPZ(Vec3i(1, 0, 1), 1.4),
+        DiagPXNZ(Vec3i(1, 0, -1), 1.4),
+        DiagNXPZ(Vec3i(-1, 0, 1), 1.4),
+        DiagNXNZ(Vec3i(-1, 0, -1), 1.4),
 
-        DownPX(Vec3i(1, -1, 0), 14),
-        DownPZ(Vec3i(0, -1, 1), 14),
-        DownNX(Vec3i(-1, -1, 0), 14),
-        DownNZ(Vec3i(0, -1, -1), 14),
+        DownPX(Vec3i(1, -1, 0), 1.4),
+        DownPZ(Vec3i(0, -1, 1), 1.4),
+        DownNX(Vec3i(-1, -1, 0), 1.4),
+        DownNZ(Vec3i(0, -1, -1), 1.4),
 
-        DiagDownPXPZ(Vec3i(1, -1, 1), 18),
-        DiagDownPXNZ(Vec3i(1, -1, -1), 18),
-        DiagDownNXPZ(Vec3i(-1, -1, 1), 18),
-        DiagDownNXNZ(Vec3i(-1, -1, -1), 18),
+        DiagDownPXPZ(Vec3i(1, -1, 1), 1.8),
+        DiagDownPXNZ(Vec3i(1, -1, -1), 1.8),
+        DiagDownNXPZ(Vec3i(-1, -1, 1), 1.8),
+        DiagDownNXNZ(Vec3i(-1, -1, -1), 1.8),
 
-        UpPX(Vec3i(1, 1, 0), 20),
-        UpPZ(Vec3i(0, 1, 1), 20),
-        UpNX(Vec3i(-1, 1, 0), 20),
-        UpNZ(Vec3i(0, 1, -1), 20),
+        UpPX(Vec3i(1, 1, 0), 2.0),
+        UpPZ(Vec3i(0, 1, 1), 2.0),
+        UpNX(Vec3i(-1, 1, 0), 2.0),
+        UpNZ(Vec3i(0, 1, -1), 2.0),
     }
 
     private fun isValid(c : Vec3i, n : Vec3i) : Boolean {
@@ -67,7 +67,7 @@ object Pathfinder {
         val nah = mutableSetOf<Vec3i>()
         val yea = PriorityQueue {
             n1 : Node, n2 : Node -> Int
-            if(n1.f == n2.f) n1.h - n2.h else n1.f - n2.f
+            if(n1.f == n2.f) (n1.h - n2.h).toInt() else (n1.f - n2.f).toInt()
         }
         yea.add(Node(start))
         while(yea.isNotEmpty()) {
@@ -79,7 +79,7 @@ object Pathfinder {
                 val npos = c.pos.add(d.vec)
                 if(nah.contains(npos)) continue
                 if(!isValid(c.pos, npos)) continue
-                val n = Node(npos, c.g + d.cost, npos.manhattan(dest), c)
+                val n = Node(npos, c.g + d.cost, npos.distanceSq(dest), c)
                 yea.add(n)
             }
         }

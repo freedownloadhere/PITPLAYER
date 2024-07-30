@@ -1,7 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.extensions.*
-import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot

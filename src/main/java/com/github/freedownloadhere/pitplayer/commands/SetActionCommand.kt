@@ -1,5 +1,6 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.commands
 
+import com.github.freedownloadhere.pitplayer.StateMachine
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 

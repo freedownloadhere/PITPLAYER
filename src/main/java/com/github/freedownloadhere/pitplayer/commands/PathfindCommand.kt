@@ -1,5 +1,7 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.commands
 
+import com.github.freedownloadhere.pitplayer.CombatModule
+import com.github.freedownloadhere.pitplayer.GPS
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.Vec3i

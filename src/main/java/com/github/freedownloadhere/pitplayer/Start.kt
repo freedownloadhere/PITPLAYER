@@ -1,5 +1,7 @@
 package com.github.freedownloadhere.pitplayer
 
+import com.github.freedownloadhere.pitplayer.commands.PathfindCommand
+import com.github.freedownloadhere.pitplayer.commands.SetActionCommand
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.registry.ClientRegistry
