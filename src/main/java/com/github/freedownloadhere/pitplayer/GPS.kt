@@ -3,6 +3,8 @@ package com.github.freedownloadhere.pitplayer
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLiving
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import java.util.PriorityQueue
@@ -17,7 +19,7 @@ object GPS {
     }
 
     fun traverseRoute() {
-        while(route.isNotEmpty() && player.positionVector.squareDistanceToXZ(route.last()) <= 1)
+        while(route.isNotEmpty() && player.positionVector.squareDistanceToXZ(route.last()) <= 0.5)
             route.removeLast()
         if(AutoPilot.isJumping) AutoPilot.stopJumping()
         if(AutoPilot.isWalking) AutoPilot.stopWalking()
@@ -38,15 +40,20 @@ object GPS {
         }
 
         for(entity in world.loadedEntityList) {
-            if (entity == null || entity == player || entity !is EntityLiving) continue
+            if (entity == null || entity == player || entity !is EntityLiving || pos.squareDistanceTo(entity.positionVector) >= 900) continue
             entityHeap.add(entity)
         }
 
-        val playerPos = player.blockBelow?.toVec3() ?: return
         while(entityHeap.isNotEmpty()) {
-            val entityPos = entityHeap.remove().blockBelow?.toVec3() ?: continue
-            val entityRoute = Pathfinder.pathfind(entityPos.toBlockPos(), playerPos.toBlockPos()) ?: continue
-            route = entityRoute
+            val entity = entityHeap.remove()
+            val entityPos = entity.positionVector
+            val playerHead = player.positionVector.toPlayerHead()
+            val ray1 = world.rayTraceBlocks(playerHead, entityPos)
+            println(ray1)
+            val ray2 = world.rayTraceBlocks(playerHead, entityPos.toPlayerHead())
+            println(ray2)
+            if(ray1 != null && ray2 != null) continue
+            makeRoute(entity.blockBelow ?: break)
             break
         }
     }

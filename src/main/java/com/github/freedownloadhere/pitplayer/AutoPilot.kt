@@ -2,7 +2,6 @@ package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.client.settings.KeyBinding
-import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
@@ -19,13 +18,6 @@ object AutoPilot {
         isWalking = false
         KeyBinding.setKeyBindState(mc.gameSettings.keyBindJump.keyCode, false)
         isJumping = false
-    }
-
-    fun message(s : String, prefix : String? = null) {
-        var msg = ""
-        if(prefix != null) msg += "[$prefix] "
-        msg += s
-        player.addChatComponentMessage(ChatComponentText(msg))
     }
 
     fun lookForward() {
