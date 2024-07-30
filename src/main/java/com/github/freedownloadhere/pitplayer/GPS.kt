@@ -10,11 +10,24 @@ import java.util.PriorityQueue
 object GPS {
     var route = mutableListOf<Vec3>()
 
-    fun pathfindTo(dest : Vec3i) {
+    fun makeRoute(dest : Vec3i) {
         val r = Pathfinder.pathfind(dest, player.blockBelow ?: return) ?: return
         if(r.isEmpty()) return
         route = r
-        PlayerRemote.lookAt(route.last().toPlayerHead())
+    }
+
+    fun traverseRoute() {
+        while(route.isNotEmpty() && player.positionVector.squareDistanceToXZ(route.last()) <= 1)
+            route.removeLast()
+        if(AutoPilot.isJumping) AutoPilot.stopJumping()
+        if(AutoPilot.isWalking) AutoPilot.stopWalking()
+        if(route.isEmpty()) return
+        val target = route.last()
+        AutoPilot.lookAtYaw(target)
+        AutoPilot.lookForward()
+        AutoPilot.walkForward()
+        if(target.y > player.positionVector.y)
+            AutoPilot.jump()
     }
 
     fun pathfindToNearestEntity() {

@@ -19,7 +19,7 @@ class PathfindCommand : CommandBase() {
             return
         }
         val dest = Vec3i(args[0].toInt(), args[1].toInt(), args[2].toInt())
-        GPS.pathfindTo(dest)
+        GPS.makeRoute(dest)
     }
 
     override fun getRequiredPermissionLevel(): Int {

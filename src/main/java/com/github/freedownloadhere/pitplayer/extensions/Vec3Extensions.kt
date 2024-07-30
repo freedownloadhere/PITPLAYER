@@ -28,3 +28,7 @@ fun Vec3.toPlayerHead() : Vec3 {
 fun Vec3.add(x1 : Double, y1 : Double, z1 : Double) : Vec3 {
     return Vec3(x + x1, y + y1, z + z1)
 }
+
+fun Vec3.squareDistanceToXZ(pos : Vec3) : Double {
+    return squareDistanceTo(Vec3(pos.x, y, pos.z))
+}
