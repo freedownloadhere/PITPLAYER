@@ -10,13 +10,26 @@ object StateMachine : IObserver {
     enum class PlayerAction {
         Idle,
         Wandering,
+        Pathing,
         Fighting
     }
-    var action = PlayerAction.Idle
 
-    override fun update(e: IEvent) {
+    object State {
+        var action = PlayerAction.Idle
+    }
+
+    override fun receiveEvent(e: IEvent) {
         if(e is EventFinishedPathing)
-            action = PlayerAction.Idle
+            State.action = PlayerAction.Idle
+    }
+
+    fun makeDecision() {
+        when(State.action) {
+            PlayerAction.Idle -> { }
+            PlayerAction.Wandering -> { }
+            PlayerAction.Pathing -> GPS.traverseRoute()
+            PlayerAction.Fighting -> CombatModule.findAndAttackTarget()
+        }
     }
 
     fun isIngame() : Boolean {
@@ -42,6 +55,4 @@ object StateMachine : IObserver {
                 return area
         return PitArea.UNKNOWN
     }
-
-
 }

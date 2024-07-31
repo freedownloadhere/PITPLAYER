@@ -18,7 +18,7 @@ class PathfindCommand : CommandBase() {
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
         if(args == null || args.size < 3) return
         val dest = Vec3i(args[0].toInt(), args[1].toInt(), args[2].toInt())
-        StateMachine.action = StateMachine.PlayerAction.Wandering
+        StateMachine.State.action = StateMachine.PlayerAction.Pathing
         GPS.dest = dest
     }
 

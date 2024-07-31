@@ -14,7 +14,7 @@ class FightCommand : CommandBase() {
     }
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
-        StateMachine.action = StateMachine.PlayerAction.Fighting
+        StateMachine.State.action = StateMachine.PlayerAction.Fighting
         return
     }
 
