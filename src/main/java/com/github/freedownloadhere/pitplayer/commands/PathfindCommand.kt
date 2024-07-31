@@ -1,6 +1,5 @@
 package com.github.freedownloadhere.pitplayer.commands
 
-import com.github.freedownloadhere.pitplayer.CombatModule
 import com.github.freedownloadhere.pitplayer.GPS
 import com.github.freedownloadhere.pitplayer.StateMachine
 import net.minecraft.command.CommandBase
@@ -19,7 +18,7 @@ class PathfindCommand : CommandBase() {
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
         if(args == null || args.size < 3) return
         val dest = Vec3i(args[0].toInt(), args[1].toInt(), args[2].toInt())
-        StateMachine.currentAction = StateMachine.PlayerAction.Wandering
+        StateMachine.action = StateMachine.PlayerAction.Wandering
         GPS.dest = dest
     }
 

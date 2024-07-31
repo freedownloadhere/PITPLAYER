@@ -1,22 +1,26 @@
 package com.github.freedownloadhere.pitplayer
 
+import com.github.freedownloadhere.pitplayer.event.EventFinishedPathing
+import com.github.freedownloadhere.pitplayer.event.IEvent
+import com.github.freedownloadhere.pitplayer.event.IObserver
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
-import net.minecraft.client.Minecraft
 
-object StateMachine {
+object StateMachine : IObserver {
     enum class PlayerAction {
         Idle,
         Wandering,
         Fighting
     }
+    var action = PlayerAction.Idle
 
-    var currentAction = PlayerAction.Idle
+    override fun update(e: IEvent) {
+        if(e is EventFinishedPathing)
+            action = PlayerAction.Idle
+    }
 
     fun isIngame() : Boolean {
-        if(Minecraft.getMinecraft().thePlayer == null) return false
-        if(Minecraft.getMinecraft().theWorld == null) return false
-        return true
+        return mc.thePlayer != null && mc.theWorld != null
     }
 
     fun isInHypixel() : Boolean {
@@ -38,4 +42,6 @@ object StateMachine {
                 return area
         return PitArea.UNKNOWN
     }
+
+
 }

@@ -13,17 +13,17 @@ class EventManager {
     fun tick(e : ClientTickEvent) {
         if(e.phase != TickEvent.Phase.END) return
         if(!StateMachine.isIngame()) return
-        when(StateMachine.currentAction) {
+        when(StateMachine.action) {
+            StateMachine.PlayerAction.Idle -> { }
             StateMachine.PlayerAction.Wandering -> GPS.traverseRoute()
             StateMachine.PlayerAction.Fighting -> CombatModule.findAndAttackTarget()
-            else -> { }
         }
     }
 
     @SubscribeEvent
     fun drawText(e : RenderGameOverlayEvent.Text) {
         if(!StateMachine.isIngame()) return
-        Renderer.text("\u00A7lAction: \u00A78${StateMachine.currentAction}", 10, 10)
+        Renderer.text("\u00A7lAction: \u00A77${StateMachine.action}", 10, 10)
         Renderer.text(PlayerRemote.state, 10, 20)
         Renderer.text(CombatModule.state, 10, 30)
     }
