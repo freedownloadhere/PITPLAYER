@@ -79,7 +79,7 @@ object Pathfinder {
                 val npos = c.pos.add(d.vec)
                 if(nah.contains(npos)) continue
                 if(!isValid(c.pos, npos)) continue
-                val n = Node(npos, c.g + d.cost, npos.distanceSq(dest), c)
+                val n = Node(npos, c.g + d.cost, npos.distance(dest), c)
                 yea.add(n)
             }
         }

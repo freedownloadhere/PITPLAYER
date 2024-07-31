@@ -14,12 +14,11 @@ object GPS : IObservable {
     var dest : Vec3i? = null
 
     fun traverseRoute() {
+        PlayerRemote.reset()
         route = Pathfinder.pathfind(dest, player.blockBelow)
         if(route == null) { dispatch(EventFinishedPathing()); return }
         while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last()) <= 0.5)
             route!!.removeLast()
-        if(PlayerRemote.isWalking) PlayerRemote.stopWalking()
-        if(PlayerRemote.isJumping) PlayerRemote.stopJumping()
         if(route!!.isEmpty()) { dispatch(EventFinishedPathing()); return }
         val target = route!!.last()
         PlayerRemote.lookAtYaw(target)

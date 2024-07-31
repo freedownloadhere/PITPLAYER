@@ -1,34 +1,43 @@
 package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.extensions.*
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
 
 object PlayerRemote {
+    var enabled : Boolean = true
+        private set
     val state : String
-        get() = "\u00A7lRemote: \u00A7${if(isEnabled) "aYes" else "cNo"}"
+        get() = "\u00A7lRemote: \u00A7${if(enabled) "aYes" else "cNo"}"
 
-    var isEnabled : Boolean = true
-    var isWalking : Boolean = false
-    var isJumping : Boolean = false
+    private enum class Key(private val key : KeyBinding, private var active : Boolean = false) {
+        Forward(mc.gameSettings.keyBindForward),
+        Jump(mc.gameSettings.keyBindJump),
+        Attack(mc.gameSettings.keyBindAttack);
+        fun reset() { if(active) release() }
+        fun hold() { key.hold(); active = true }
+        fun press() { key.press() }
+        fun release() { key.release(); active = false }
+    }
 
     fun toggle() {
-        isEnabled = !isEnabled
-        if(isEnabled) return
-        mc.gameSettings.keyBindForward.release()
-        isWalking = false
-        mc.gameSettings.keyBindJump.release()
-        isJumping = false
+        enabled = !enabled
+        reset()
+    }
+
+    fun reset() {
+        for(k in Key.entries) k.reset()
     }
 
     fun lookForward() {
-        if(!isEnabled) return
+        if(!enabled) return
         player.rotationPitch = 0.0f
     }
 
     fun lookAtYaw(pos : Vec3) {
-        if(!isEnabled) return
+        if(!enabled) return
         val distance = pos.subtract(player.headPosVector)
         val playerYaw = player.rotationYaw.cropAngle180()
         val posYaw = -atan2(distance.x, distance.z).toDegrees().toFloat().cropAngle180()
@@ -37,7 +46,7 @@ object PlayerRemote {
     }
 
     fun lookAtPitch(pos : Vec3) {
-        if(!isEnabled) return
+        if(!enabled) return
         val distance = pos.subtract(player.headPosVector)
         val playerPitch = player.rotationPitch
         val posPitch = -atan2(distance.y, hypot(distance.x, distance.z)).toDegrees().toFloat()
@@ -46,37 +55,33 @@ object PlayerRemote {
     }
 
     fun lookAt(pos : Vec3) {
-        if(!isEnabled) return
+        if(!enabled) return
         lookAtYaw(pos)
         lookAtPitch(pos)
     }
 
     fun walkForward() {
-        if(!isEnabled) return
-        mc.gameSettings.keyBindForward.hold()
-        isWalking = true
+        if(!enabled) return
+        Key.Forward.hold()
     }
 
     fun stopWalking() {
-        if(!isEnabled) return
-        mc.gameSettings.keyBindForward.release()
-        isWalking = false
+        if(!enabled) return
+        Key.Forward.reset()
     }
 
     fun jump() {
-        if(!isEnabled) return
-        mc.gameSettings.keyBindJump.hold()
-        isJumping = true
+        if(!enabled) return
+        Key.Jump.hold()
     }
 
     fun stopJumping() {
-        if(!isEnabled) return
-        mc.gameSettings.keyBindJump.release()
-        isJumping = false
+        if(!enabled) return
+        Key.Jump.reset()
     }
 
     fun attack() {
-        if(!isEnabled) return
-        mc.gameSettings.keyBindAttack.press()
+        if(!enabled) return
+        Key.Attack.press()
     }
 }
