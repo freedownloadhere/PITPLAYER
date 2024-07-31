@@ -1,8 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
-import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
-import net.minecraft.client.settings.KeyBinding
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -16,8 +14,9 @@ class EventManager {
         if(e.phase != TickEvent.Phase.END) return
         if(!StateMachine.isIngame()) return
         when(StateMachine.currentAction) {
+            StateMachine.PlayerAction.Wandering -> GPS.traverseRoute()
             StateMachine.PlayerAction.Fighting -> CombatModule.findAndAttackTarget()
-            else -> {}
+            else -> { }
         }
     }
 

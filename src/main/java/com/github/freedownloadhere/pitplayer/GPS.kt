@@ -6,12 +6,10 @@ import net.minecraft.util.Vec3i
 
 object GPS {
     var route : MutableList<Vec3>? = null
-
-    fun makeRoute(dest : Vec3i?) {
-        route = Pathfinder.pathfind(dest, player.blockBelow)
-    }
+    var dest : Vec3i? = null
 
     fun traverseRoute() {
+        route = Pathfinder.pathfind(dest, player.blockBelow)
         if(route == null) return
         while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last()) <= 0.5)
             route!!.removeLast()

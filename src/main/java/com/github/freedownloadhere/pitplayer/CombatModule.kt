@@ -47,10 +47,7 @@ object CombatModule {
         makeTargetList()
         while(targetList.isNotEmpty()) {
             val entity = targetList.remove()
-            GPS.makeRoute(entity.blockBelow)
-            if(GPS.route == null) return
-            GPS.route!!.removeFirst()
-            GPS.route!!.add(0, entity.positionVector)
+            Pathfinder.pathfind(entity.blockBelow, player.blockBelow) ?: return
             target = entity
             return
         }
@@ -58,7 +55,7 @@ object CombatModule {
 
     fun attackTarget() {
         if(target == null) return
-        GPS.makeRoute(target!!.blockBelow)
+        GPS.dest = target!!.blockBelow
         GPS.traverseRoute()
         PlayerRemote.attack()
     }
