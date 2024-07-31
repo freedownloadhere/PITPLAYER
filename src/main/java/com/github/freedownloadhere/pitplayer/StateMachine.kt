@@ -1,8 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
-import com.github.freedownloadhere.pitplayer.event.EventFinishedPathing
-import com.github.freedownloadhere.pitplayer.event.IEvent
-import com.github.freedownloadhere.pitplayer.event.IObserver
+import com.github.freedownloadhere.pitplayer.event.*
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
 
@@ -18,9 +16,30 @@ object StateMachine : IObserver {
         var action = PlayerAction.Idle
     }
 
+    private fun finishPathing() {
+        if(State.action != PlayerAction.Pathing) return
+        State.action = PlayerAction.Idle
+    }
+
+    private fun beginPathing(e : EventBeginPathing) {
+        GPS.dest = e.pos
+        GPS.makeRoute()
+        if(GPS.route.isNullOrEmpty()) return
+        State.action = PlayerAction.Pathing
+    }
+
+    private fun beginFighting() {
+        CombatModule.findTarget()
+        if(CombatModule.target == null) return
+        State.action = PlayerAction.Fighting
+    }
+
     override fun receiveEvent(e: IEvent) {
-        if(e is EventFinishedPathing)
-            State.action = PlayerAction.Idle
+        when(e::class) {
+            EventFinishedPathing::class -> finishPathing()
+            EventBeginPathing::class -> beginPathing(e as EventBeginPathing)
+            EventBeginFighting::class -> beginFighting()
+        }
     }
 
     fun makeDecision() {
@@ -28,7 +47,7 @@ object StateMachine : IObserver {
             PlayerAction.Idle -> { }
             PlayerAction.Wandering -> { }
             PlayerAction.Pathing -> GPS.traverseRoute()
-            PlayerAction.Fighting -> CombatModule.findAndAttackTarget()
+            PlayerAction.Fighting -> CombatModule.attackTarget()
         }
     }
 

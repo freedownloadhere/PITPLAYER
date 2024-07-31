@@ -25,7 +25,7 @@ object CombatModule {
         val playerPos = player.positionVector
         val playerHead = playerPos.toPlayerHead()
         for(entity in world.loadedEntityList) {
-            if (entity == null || entity == player || entity !is EntityLiving) continue
+            if (entity == null || entity == player || entity !is EntityLiving || entity.isDead) continue
 
             val entityPos = entity.positionVector
 
@@ -49,19 +49,16 @@ object CombatModule {
             val entity = targetList.remove()
             Pathfinder.pathfind(entity.blockBelow, player.blockBelow) ?: return
             target = entity
-            return
+            break
         }
     }
 
     fun attackTarget() {
         if(target == null) return
-        GPS.dest = target!!.blockBelow
+        val targetPos = target!!.blockBelow ?: return
+        GPS.dest = targetPos
+        GPS.makeRoute()
         GPS.traverseRoute()
         PlayerRemote.attack()
-    }
-
-    fun findAndAttackTarget() {
-        findTarget()
-        attackTarget()
     }
 }

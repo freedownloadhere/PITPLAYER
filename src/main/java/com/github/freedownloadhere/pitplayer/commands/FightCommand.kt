@@ -1,10 +1,13 @@
 package com.github.freedownloadhere.pitplayer.commands
 
 import com.github.freedownloadhere.pitplayer.StateMachine
+import com.github.freedownloadhere.pitplayer.event.EventBeginFighting
+import com.github.freedownloadhere.pitplayer.event.IObservable
+import com.github.freedownloadhere.pitplayer.event.IObserver
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 
-class FightCommand : CommandBase() {
+class FightCommand : CommandBase(), IObservable {
     override fun getCommandName(): String {
         return "fight"
     }
@@ -14,11 +17,13 @@ class FightCommand : CommandBase() {
     }
 
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
-        StateMachine.State.action = StateMachine.PlayerAction.Fighting
+        dispatch(EventBeginFighting())
         return
     }
 
     override fun getRequiredPermissionLevel(): Int {
         return 0
     }
+
+    override val observers = arrayListOf<IObserver>(StateMachine)
 }

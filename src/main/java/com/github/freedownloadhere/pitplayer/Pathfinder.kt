@@ -3,7 +3,6 @@ package com.github.freedownloadhere.pitplayer
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import java.util.*
 
 object Pathfinder {
     private data class Node(val pos : Vec3i, val g : Double = 0.0, val h : Double = 0.0, val next : Node? = null) {
@@ -62,16 +61,28 @@ object Pathfinder {
         return l
     }
 
+    private fun MutableMap<Vec3i, Node>.bestNode() : Node {
+        var best : Node? = null
+        var bestF = Double.MAX_VALUE
+        var bestH = Double.MAX_VALUE
+        for(node in values) {
+            if(node.f < bestF || (node.f == bestF && node.h < bestH)) {
+                best = node
+                bestF = node.f
+                bestH = node.h
+            }
+        }
+        remove(best!!.pos)
+        return best
+    }
+
     fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
         if(dest == null || start == null) return null
         val nah = mutableSetOf<Vec3i>()
-        val yea = PriorityQueue {
-            n1 : Node, n2 : Node -> Int
-            if(n1.f == n2.f) (n1.h - n2.h).toInt() else (n1.f - n2.f).toInt()
-        }
-        yea.add(Node(start))
+        val yea = mutableMapOf<Vec3i, Node>()
+        yea[start] = Node(start)
         while(yea.isNotEmpty()) {
-            val c = yea.remove()
+            val c = yea.bestNode()
             if(nah.contains(c.pos)) continue
             nah.add(c.pos)
             if(c.pos.matches(dest)) { return makeSimple(c) }
@@ -79,8 +90,9 @@ object Pathfinder {
                 val npos = c.pos.add(d.vec)
                 if(nah.contains(npos)) continue
                 if(!isValid(c.pos, npos)) continue
-                val n = Node(npos, c.g + d.cost, npos.distance(dest), c)
-                yea.add(n)
+                val ng = c.g + d.cost
+                if(yea.contains(npos) && ng >= yea[npos]!!.g) continue
+                yea[npos] = Node(npos, ng, npos.distance(dest), c)
             }
         }
         return null
