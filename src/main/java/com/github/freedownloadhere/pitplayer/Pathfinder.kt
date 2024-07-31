@@ -3,6 +3,9 @@ package com.github.freedownloadhere.pitplayer
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.min
 
 object Pathfinder {
     private data class Node(val pos : Vec3i, val g : Double = 0.0, val h : Double = 0.0, val next : Node? = null) {
@@ -46,6 +49,40 @@ object Pathfinder {
         if(n.y == c.y - 1 && world.isSolid(n.upThree)) return false
         return true
     }
+
+    var blockLine = mutableListOf<Vec3>()
+    fun makeBlockLine(dest : Vec3i, start : Vec3i) {
+        val l = mutableListOf<Vec3>()
+        val x1 = min(start.x, dest.x)
+        val x2 = max(start.x, dest.x)
+        val z1 = min(start.z, dest.z)
+        val z2 = max(start.z, dest.z)
+        if(x1 == x2) {
+            for (z in z1..z2)
+                l.add(Vec3(x1.toDouble(), start.y.toDouble(), z.toDouble()))
+            blockLine = l
+            return
+        }
+        val m = (dest.z - start.z).toDouble() / (dest.x - start.x)
+        val n = start.z - m * start.x
+        val f = { x : Int -> floor(m * x + n).toInt() }
+        for(x in x1..x2) {
+            val f1 = min(f(x), f(x + 1))
+            val f2 = max(f(x), f(x + 1))
+            for (z in max(f1, z1)..min(f2, z2))
+                l.add(Vec3(x.toDouble(), start.y.toDouble(), z.toDouble()))
+            //l.add(Vec3i(x, start.y, z))
+        }
+        blockLine = l
+    }
+
+    /*private fun canTraverseLine(dest : Vec3i, start : Vec3i) : Boolean {
+        val posList = makeBlockLine(dest, start)
+        for(i in 0..(posList.size - 2))
+            if(!isValid(posList[i], posList[i + 1]))
+                return false
+        return true
+    }*/
 
     private fun makeSimple(n : Node) : MutableList<Vec3> {
         val l = mutableListOf<Vec3>()
