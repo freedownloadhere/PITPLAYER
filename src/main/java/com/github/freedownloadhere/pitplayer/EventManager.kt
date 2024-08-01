@@ -27,8 +27,8 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        if(Pathfinder.blockLine.isEmpty()) return
-        Renderer.highlightNBlocks(Pathfinder.blockLine)
+        if(Pathfinder.blockLine.isNullOrEmpty()) return
+        Renderer.highlightNBlocks2(Pathfinder.blockLine!!)
         //if(GPS.route.isNullOrEmpty()) return
         //Renderer.highlightNBlocks(GPS.route!!)
         //Renderer.highlightLine(player.positionVector, GPS.route!!.last())

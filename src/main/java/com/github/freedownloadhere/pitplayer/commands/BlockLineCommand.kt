@@ -19,7 +19,7 @@ class BlockLineCommand : CommandBase() {
     override fun processCommand(sender: ICommandSender?, args: Array<out String>?) {
         if(args == null || args.size < 3) return
         val dest = Vec3i(args[0].toInt(), args[1].toInt(), args[2].toInt())
-        Pathfinder.makeBlockLine(dest, player.blockBelow ?: return)
+        Pathfinder.makeBlockLine(dest, player.blockBelow)
     }
 
     override fun getRequiredPermissionLevel(): Int {

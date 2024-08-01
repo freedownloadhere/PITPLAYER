@@ -50,52 +50,71 @@ object Pathfinder {
         return true
     }
 
-    var blockLine = mutableListOf<Vec3>()
-    fun makeBlockLine(dest : Vec3i, start : Vec3i) {
-        val l = mutableListOf<Vec3>()
-        val x1 = min(start.x, dest.x)
-        val x2 = max(start.x, dest.x)
-        val z1 = min(start.z, dest.z)
-        val z2 = max(start.z, dest.z)
-        if(x1 == x2) {
-            for (z in z1..z2)
-                l.add(Vec3(x1.toDouble(), start.y.toDouble(), z.toDouble()))
-            blockLine = l
+    var blockLine : MutableList<Vec3i>? = null
+    fun makeBlockLine(dest : Vec3i?, start : Vec3i?) {
+        if(dest == null || start == null) {
+            blockLine = null
             return
         }
+        val l = mutableListOf<Vec3i>()
         val m = (dest.z - start.z).toDouble() / (dest.x - start.x)
         val n = start.z - m * start.x
         val f = { x : Int -> floor(m * x + n).toInt() }
-        for(x in x1..x2) {
-            val f1 = min(f(x), f(x + 1))
-            val f2 = max(f(x), f(x + 1))
-            for (z in max(f1, z1)..min(f2, z2))
-                l.add(Vec3(x.toDouble(), start.y.toDouble(), z.toDouble()))
-            //l.add(Vec3i(x, start.y, z))
+        val z1 = min(start.z, dest.z)
+        val z2 = max(start.z, dest.z)
+        val xrange = if(start.x <= dest.x) start.x..dest.x else start.x downTo dest.x
+        for(x in xrange) {
+            val zrange =
+                if(start.z <= dest.z) {
+                    if(start.x <= dest.x) max(z1, f(x))..min(z2, f(x + 1))
+                    else max(z1, f(x + 1))..min(z2, f(x))
+                } else {
+                    if(start.x <= dest.x) min(z2, f(x)) downTo max(z1, f(x + 1))
+                    else max(z1, f(x + 1)) downTo min(z2, f(x))
+                }
+            for (z in zrange) {
+                val block = Vec3i(x, start.y, z).upOne.firstBlockBelow
+                if(block == null) { blockLine = null; return }
+                l.add(block)
+            }
         }
         blockLine = l
     }
 
-    /*private fun canTraverseLine(dest : Vec3i, start : Vec3i) : Boolean {
-        val posList = makeBlockLine(dest, start)
-        for(i in 0..(posList.size - 2))
-            if(!isValid(posList[i], posList[i + 1]))
+    private fun canTraverseLine(dest : Vec3i, start : Vec3i) : Boolean {
+        makeBlockLine(dest, start)
+        if(blockLine == null) return false
+        for(i in 0..(blockLine!!.size - 2))
+            if(!isValid(blockLine!![i], blockLine!![i + 1]))
                 return false
         return true
-    }*/
+    }
 
     private fun makeSimple(n : Node) : MutableList<Vec3> {
-        val l = mutableListOf<Vec3>()
+        val l = mutableListOf<Vec3i>()
+        val l2 = mutableListOf<Vec3>()
         var c : Node? = n
         var delta1 = Vec3i(0, 0, 0)
         while(c?.next != null) {
             val delta2 = c.pos.subtract(c.next!!.pos)
             if(delta1.matches(delta2)) { c = c.next; continue }
             delta1 = delta2
-            l.add(c.pos.toVec3().toBlockTop())
+            l.add(c.pos)
             c = c.next
         }
-        return l
+        var i = 0
+        var j = 1
+        l2.add(l.first().toVec3().toBlockTop())
+        while(j < l.size) {
+            if(!canTraverseLine(l[i], l[j])) {
+                j--
+                l2.add(l[j].toVec3().toBlockTop())
+                i = j
+            }
+            j++
+        }
+        l2.add(l.last().toVec3().toBlockTop())
+        return l2
     }
 
     private fun MutableMap<Vec3i, Node>.bestNode() : Node {

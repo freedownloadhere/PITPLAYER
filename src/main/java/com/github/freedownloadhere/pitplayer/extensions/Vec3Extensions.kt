@@ -13,6 +13,13 @@ val Vec3.y : Double
 val Vec3.z : Double
     get() = zCoord
 
+fun Vec3.toBlockBelow() : Vec3i? {
+    var pos = toBlockPos()
+    while(pos.y >= 0 && !world.isSolid(pos))
+        pos = pos.downOne
+    return if(pos.y < 0) null else pos
+}
+
 fun Vec3.toBlockPos() : Vec3i {
     return Vec3i(floor(x).toInt(), floor(y).toInt(), floor(z).toInt())
 }

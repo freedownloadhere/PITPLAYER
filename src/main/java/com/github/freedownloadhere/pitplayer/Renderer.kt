@@ -6,6 +6,7 @@ import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import org.lwjgl.opengl.GL11
 
 object Renderer {
@@ -88,6 +89,11 @@ object Renderer {
         }
         Tessellator.getInstance().draw()
         highlightLineEnd()
+    }
+
+    fun highlightNBlocks2(posList : List<Vec3i>) {
+        for(pos in posList)
+            highlightBlock(pos.toVec3())
     }
 
     fun highlightNBlocks(posList : List<Vec3>) {

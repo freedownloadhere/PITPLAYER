@@ -29,6 +29,14 @@ val Vec3i.upTwo : Vec3i
 val Vec3i.upThree : Vec3i
     get() = Vec3i(x, y + 3, z)
 
+val Vec3i.firstBlockBelow : Vec3i?
+    get() {
+        var pos = this
+        while(pos.y >= 0 && !world.isSolid(pos))
+            pos = pos.downOne
+        return if(pos.y < 0) null else pos
+    }
+
 fun Vec3i.toVec3() : Vec3 {
     return Vec3(x.toDouble(), y.toDouble(), z.toDouble())
 }
