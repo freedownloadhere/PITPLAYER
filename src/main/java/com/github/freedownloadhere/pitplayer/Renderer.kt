@@ -6,7 +6,6 @@ import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
@@ -15,7 +14,7 @@ object Renderer {
         mc.fontRendererObj.drawStringWithShadow(s, x.toFloat(), y.toFloat(), 0x00ffffff)
     }
 
-    private fun highlightLineBegin() {
+    private fun highlightBegin() {
         GL11.glPushMatrix()
         val partialPos = player.partialPos
         GL11.glTranslated(-partialPos.x, -partialPos.y, -partialPos.z)
@@ -27,44 +26,45 @@ object Renderer {
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
     }
 
-    private fun highlightLineEnd() {
+    private fun highlightEnd() {
         GL11.glPopAttrib()
         GL11.glDepthFunc(GL11.GL_LEQUAL)
         GL11.glPopMatrix()
     }
 
-    fun highlightLine(p1 : Vec3, p2 : Vec3) {
-        highlightLineBegin()
+    fun line(p1 : Vec3, p2 : Vec3, color : Color = Color.WHITE) {
+        highlightBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
-        worldRenderer.pos(p1.x, p1.y, p1.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-        worldRenderer.pos(p2.x, p2.y, p2.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+        worldRenderer.pos(p1.x, p1.y, p1.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(p2.x, p2.y, p2.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         Tessellator.getInstance().draw()
-        highlightLineEnd()
+        highlightEnd()
     }
 
-    fun highlightNLines(posList : List<Vec3>) {
-        highlightLineBegin()
+    fun lines(posList : List<Vec3>, color : Color = Color.WHITE) {
+        highlightBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(i in 0 .. (posList.size - 2)) {
-            worldRenderer.pos(posList[i].x, posList[i].y, posList[i].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-            worldRenderer.pos(posList[i + 1].x, posList[i + 1].y, posList[i + 1].z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(posList[i].x, posList[i].y, posList[i].z).color(color.red, color.green, color.blue, color.alpha).endVertex()
+            worldRenderer.pos(posList[i + 1].x, posList[i + 1].y, posList[i + 1].z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         }
         Tessellator.getInstance().draw()
-        highlightLineEnd()
+        highlightEnd()
     }
 
-    fun highlightBlock(pos : Vec3, color : Color = Color.WHITE) {
+    fun block(pos : Vec3, color : Color = Color.WHITE) {
+        val pos1 = pos.toBlockPos().toVec3()
         val corners = arrayListOf(
-            pos.add(Vec3(0.0, 0.0, 0.0)),
-            pos.add(Vec3(1.0, 0.0, 0.0)),
-            pos.add(Vec3(1.0, 0.0, 1.0)),
-            pos.add(Vec3(0.0, 0.0, 1.0)),
-            pos.add(Vec3(0.0, 1.0, 0.0)),
-            pos.add(Vec3(1.0, 1.0, 0.0)),
-            pos.add(Vec3(1.0, 1.0, 1.0)),
-            pos.add(Vec3(0.0, 1.0, 1.0)),
+            pos1.add(Vec3(0.0, 0.0, 0.0)),
+            pos1.add(Vec3(1.0, 0.0, 0.0)),
+            pos1.add(Vec3(1.0, 0.0, 1.0)),
+            pos1.add(Vec3(0.0, 0.0, 1.0)),
+            pos1.add(Vec3(0.0, 1.0, 0.0)),
+            pos1.add(Vec3(1.0, 1.0, 0.0)),
+            pos1.add(Vec3(1.0, 1.0, 1.0)),
+            pos1.add(Vec3(0.0, 1.0, 1.0)),
         )
         val indices = arrayListOf(
             Pair(0, 1),
@@ -80,7 +80,7 @@ object Renderer {
             Pair(6, 7),
             Pair(7, 4)
         )
-        highlightLineBegin()
+        highlightBegin()
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(edge in indices) {
@@ -90,11 +90,11 @@ object Renderer {
             worldRenderer.pos(p2.x, p2.y, p2.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         }
         Tessellator.getInstance().draw()
-        highlightLineEnd()
+        highlightEnd()
     }
 
-    fun highlightNBlocks(posList : List<Vec3>, color : Color = Color.WHITE) {
+    fun blocks(posList : List<Vec3>, color : Color = Color.WHITE) {
         for(pos in posList)
-            highlightBlock(pos.toBlockPos().toVec3(), color)
+            block(pos.toBlockPos().toVec3(), color)
     }
 }

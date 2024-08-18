@@ -27,8 +27,11 @@ class EventManager {
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
         if(GPS.route.isNullOrEmpty()) return
-        Renderer.highlightNBlocks(GPS.route!!, Color.GREEN)
-        Renderer.highlightLine(player.partialPos, GPS.route!!.last())
+        val lastBlock = GPS.route!!.removeLast()
+        Renderer.block(lastBlock, Color.GREEN)
+        Renderer.blocks(GPS.route!!, Color.GRAY)
+        Renderer.line(player.partialPos, lastBlock, Color.GREEN)
+        GPS.route!!.add(lastBlock)
     }
 
     @SubscribeEvent

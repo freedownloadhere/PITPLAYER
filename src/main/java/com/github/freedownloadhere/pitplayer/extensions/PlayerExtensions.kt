@@ -10,6 +10,7 @@ val EntityPlayerSP.headPosVector : Vec3
 
 val EntityPlayerSP.partialPos : Vec3
     get() {
+        // TODO expect issues in the future
         val timer = Minecraft::class.java.getDeclaredField("timer")
         timer.isAccessible = true
         val timerValue = timer.get(mc) as Timer
