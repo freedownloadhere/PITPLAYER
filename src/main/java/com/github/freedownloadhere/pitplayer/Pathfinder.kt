@@ -3,12 +3,14 @@ package com.github.freedownloadhere.pitplayer
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
 
 object Pathfinder {
-    private data class Node(val pos : Vec3i, val g : Double = 0.0, val h : Double = 0.0, val next : Node? = null) {
+    private data class Node(
+        val pos : Vec3i,
+        val g : Double = 0.0,
+        val h : Double = 0.0,
+        val next : Node? = null
+    ) {
         val f : Double
             get() = g + h
     }
@@ -50,71 +52,32 @@ object Pathfinder {
         return true
     }
 
-    var blockLine : MutableList<Vec3i>? = null
-    fun makeBlockLine(dest : Vec3i?, start : Vec3i?) {
-        if(dest == null || start == null) {
-            blockLine = null
-            return
-        }
-        val l = mutableListOf<Vec3i>()
-        val m = (dest.z - start.z).toDouble() / (dest.x - start.x)
-        val n = start.z - m * start.x
-        val f = { x : Int -> floor(m * x + n).toInt() }
-        val z1 = min(start.z, dest.z)
-        val z2 = max(start.z, dest.z)
-        val xrange = if(start.x <= dest.x) start.x..dest.x else start.x downTo dest.x
-        for(x in xrange) {
-            val zrange =
-                if(start.z <= dest.z) {
-                    if(start.x <= dest.x) max(z1, f(x))..min(z2, f(x + 1))
-                    else max(z1, f(x + 1))..min(z2, f(x))
-                } else {
-                    if(start.x <= dest.x) min(z2, f(x)) downTo max(z1, f(x + 1))
-                    else max(z1, f(x + 1)) downTo min(z2, f(x))
-                }
-            for (z in zrange) {
-                val block = Vec3i(x, start.y, z).upOne.firstBlockBelow
-                if(block == null) { blockLine = null; return }
-                l.add(block)
-            }
-        }
-        blockLine = l
+    private fun isNotValid(c : Vec3i, n : Vec3i) : Boolean {
+        return !isValid(c, n)
     }
 
-    private fun canTraverseLine(dest : Vec3i, start : Vec3i) : Boolean {
-        makeBlockLine(dest, start)
-        if(blockLine == null) return false
-        for(i in 0..(blockLine!!.size - 2))
-            if(!isValid(blockLine!![i], blockLine!![i + 1]))
-                return false
-        return true
-    }
-
-    private fun makeSimple(n : Node) : MutableList<Vec3> {
-        val l = mutableListOf<Vec3i>()
-        val l2 = mutableListOf<Vec3>()
+    private fun makeSimplePath(n : Node) : MutableList<Vec3> {
+        val l = mutableListOf<Vec3>()
         var c : Node? = n
         var delta1 = Vec3i(0, 0, 0)
         while(c?.next != null) {
             val delta2 = c.pos.subtract(c.next!!.pos)
             if(delta1.matches(delta2)) { c = c.next; continue }
             delta1 = delta2
-            l.add(c.pos)
+            l.add(c.pos.toVec3().toBlockTop())
             c = c.next
         }
-        var i = 0
-        var j = 1
-        l2.add(l.first().toVec3().toBlockTop())
-        while(j < l.size) {
-            if(!canTraverseLine(l[i], l[j])) {
-                j--
-                l2.add(l[j].toVec3().toBlockTop())
-                i = j
-            }
-            j++
+        return l
+    }
+
+    private fun makeFullPath(n : Node) : MutableList<Vec3> {
+        val l = mutableListOf<Vec3>()
+        var c : Node? = n
+        while(c != null) {
+            l.add(c.pos.toVec3().toBlockTop())
+            c = c.next
         }
-        l2.add(l.last().toVec3().toBlockTop())
-        return l2
+        return l
     }
 
     private fun MutableMap<Vec3i, Node>.bestNode() : Node {
@@ -133,24 +96,42 @@ object Pathfinder {
     }
 
     fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
-        if(dest == null || start == null) return null
-        val nah = mutableSetOf<Vec3i>()
-        val yea = mutableMapOf<Vec3i, Node>()
-        yea[start] = Node(start)
-        while(yea.isNotEmpty()) {
-            val c = yea.bestNode()
-            if(nah.contains(c.pos)) continue
-            nah.add(c.pos)
-            if(c.pos.matches(dest)) { return makeSimple(c) }
+        if(dest == null || start == null)
+            return null
+
+        val closed = mutableSetOf<Vec3i>()
+        val opened = mutableMapOf<Vec3i, Node>()
+        opened[start] = Node(start, 0.0, 0.0, null)
+
+        while(opened.isNotEmpty()) {
+            // gets the node with the lowest F value
+            // and also removes it from the list
+            val curr = opened.bestNode()
+
+            if(closed.contains(curr.pos)) continue
+            closed.add(curr.pos)
+
+            if(curr.pos.matches(dest))
+                return makeFullPath(curr)
+
             for(d in Directions.entries) {
-                val npos = c.pos.add(d.vec)
-                if(nah.contains(npos)) continue
-                if(!isValid(c.pos, npos)) continue
-                val ng = c.g + d.cost
-                if(yea.contains(npos) && ng >= yea[npos]!!.g) continue
-                yea[npos] = Node(npos, ng, npos.distance(dest), c)
+                val nextpos = curr.pos.add(d.vec)
+
+                if(closed.contains(nextpos)) continue
+                if(isNotValid(curr.pos, nextpos)) continue
+
+                // if we already have a shorter path
+                // to the next node, leave it like that
+                val nextg = curr.g + d.cost
+                if(opened.contains(nextpos) && nextg >= opened[nextpos]!!.g) continue
+
+                val nexth = nextpos.distance(dest)
+                opened[nextpos] = Node(nextpos, nextg, nexth, curr)
             }
         }
+
+        // if we get to this point, we
+        // did not find any valid path
         return null
     }
 }

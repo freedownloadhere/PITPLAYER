@@ -1,5 +1,6 @@
 package com.github.freedownloadhere.pitplayer
 
+import com.github.freedownloadhere.pitplayer.extensions.partialPos
 import com.github.freedownloadhere.pitplayer.extensions.player
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -7,6 +8,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import java.awt.Color
 
 class EventManager {
     @SubscribeEvent
@@ -19,19 +21,14 @@ class EventManager {
     @SubscribeEvent
     fun drawText(e : RenderGameOverlayEvent.Text) {
         if(!StateMachine.isIngame()) return
-        Renderer.text("\u00A7lAction: \u00A77${StateMachine.State.action}", 10, 10)
-        Renderer.text(PlayerRemote.state, 10, 20)
-        Renderer.text(CombatModule.state, 10, 30)
     }
 
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        if(Pathfinder.blockLine.isNullOrEmpty()) return
-        Renderer.highlightNBlocks2(Pathfinder.blockLine!!)
-        //if(GPS.route.isNullOrEmpty()) return
-        //Renderer.highlightNBlocks(GPS.route!!)
-        //Renderer.highlightLine(player.positionVector, GPS.route!!.last())
+        if(GPS.route.isNullOrEmpty()) return
+        Renderer.highlightNBlocks(GPS.route!!, Color.GREEN)
+        Renderer.highlightLine(player.partialPos, GPS.route!!.last())
     }
 
     @SubscribeEvent

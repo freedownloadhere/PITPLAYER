@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import org.lwjgl.opengl.GL11
+import java.awt.Color
 
 object Renderer {
     fun text(s : String, x : Int, y : Int) {
@@ -16,7 +17,8 @@ object Renderer {
 
     private fun highlightLineBegin() {
         GL11.glPushMatrix()
-        GL11.glTranslated(-player.posX, -player.posY, -player.posZ)
+        val partialPos = player.partialPos
+        GL11.glTranslated(-partialPos.x, -partialPos.y, -partialPos.z)
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
         GL11.glDisable(GL11.GL_LIGHTING)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -53,7 +55,7 @@ object Renderer {
         highlightLineEnd()
     }
 
-    fun highlightBlock(pos : Vec3) {
+    fun highlightBlock(pos : Vec3, color : Color = Color.WHITE) {
         val corners = arrayListOf(
             pos.add(Vec3(0.0, 0.0, 0.0)),
             pos.add(Vec3(1.0, 0.0, 0.0)),
@@ -84,20 +86,15 @@ object Renderer {
         for(edge in indices) {
             val p1 = corners[edge.first]
             val p2 = corners[edge.second]
-            worldRenderer.pos(p1.x, p1.y, p1.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
-            worldRenderer.pos(p2.x, p2.y, p2.z).color(1.0f, 1.0f, 1.0f, 1.0f).endVertex()
+            worldRenderer.pos(p1.x, p1.y, p1.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
+            worldRenderer.pos(p2.x, p2.y, p2.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         }
         Tessellator.getInstance().draw()
         highlightLineEnd()
     }
 
-    fun highlightNBlocks2(posList : List<Vec3i>) {
+    fun highlightNBlocks(posList : List<Vec3>, color : Color = Color.WHITE) {
         for(pos in posList)
-            highlightBlock(pos.toVec3())
-    }
-
-    fun highlightNBlocks(posList : List<Vec3>) {
-        for(pos in posList)
-            highlightBlock(pos.toBlockPos().toVec3())
+            highlightBlock(pos.toBlockPos().toVec3(), color)
     }
 }
