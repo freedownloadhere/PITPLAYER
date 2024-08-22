@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.utils
 
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import net.minecraft.scoreboard.ScorePlayerTeam

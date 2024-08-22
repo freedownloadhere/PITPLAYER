@@ -3,6 +3,8 @@ package com.github.freedownloadhere.pitplayer
 import com.github.freedownloadhere.pitplayer.commands.BlockLineCommand
 import com.github.freedownloadhere.pitplayer.commands.FightCommand
 import com.github.freedownloadhere.pitplayer.commands.PathfindCommand
+import com.github.freedownloadhere.pitplayer.utils.EventManager
+import com.github.freedownloadhere.pitplayer.utils.Keybinds
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.client.registry.ClientRegistry

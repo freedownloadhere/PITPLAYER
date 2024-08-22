@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.utils
 
 enum class PitArea(val rect : AreaRect, val str : String) {
     UNKNOWN (AreaRect(0.0, 0.0, 0.0, 0.0, 0.0, 0.0), "Unknown"),

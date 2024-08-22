@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.utils
 
 import net.minecraft.util.Vec3
 import com.github.freedownloadhere.pitplayer.extensions.*

@@ -1,9 +1,9 @@
 package com.github.freedownloadhere.pitplayer.commands
 
-import com.github.freedownloadhere.pitplayer.StateMachine
 import com.github.freedownloadhere.pitplayer.event.EventBeginPathing
 import com.github.freedownloadhere.pitplayer.event.IObservable
 import com.github.freedownloadhere.pitplayer.event.IObserver
+import com.github.freedownloadhere.pitplayer.state.StateMachine
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.Vec3i

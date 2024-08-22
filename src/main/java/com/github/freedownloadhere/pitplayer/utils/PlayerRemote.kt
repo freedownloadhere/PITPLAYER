@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.utils
 
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.client.settings.KeyBinding

@@ -1,9 +1,11 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.modules
 
 import com.github.freedownloadhere.pitplayer.extensions.blockBelow
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.toPlayerHead
 import com.github.freedownloadhere.pitplayer.extensions.world
+import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
+import com.github.freedownloadhere.pitplayer.utils.PlayerRemote
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLiving
 import java.util.*

@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.rendering
 
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
@@ -47,8 +47,14 @@ object Renderer {
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(i in 0 .. (posList.size - 2)) {
-            worldRenderer.pos(posList[i].x, posList[i].y, posList[i].z).color(color.red, color.green, color.blue, color.alpha).endVertex()
-            worldRenderer.pos(posList[i + 1].x, posList[i + 1].y, posList[i + 1].z).color(color.red, color.green, color.blue, color.alpha).endVertex()
+            worldRenderer
+                .pos(posList[i].x, posList[i].y, posList[i].z)
+                .color(color.red, color.green, color.blue, color.alpha)
+                .endVertex()
+            worldRenderer
+                .pos(posList[i + 1].x, posList[i + 1].y, posList[i + 1].z)
+                .color(color.red, color.green, color.blue, color.alpha)
+                .endVertex()
         }
         Tessellator.getInstance().draw()
         highlightEnd()

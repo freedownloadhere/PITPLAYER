@@ -1,9 +1,12 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.modules
 
+import com.github.freedownloadhere.pitplayer.utils.PlayerRemote
 import com.github.freedownloadhere.pitplayer.event.EventFinishedPathing
 import com.github.freedownloadhere.pitplayer.event.IObservable
 import com.github.freedownloadhere.pitplayer.event.IObserver
 import com.github.freedownloadhere.pitplayer.extensions.*
+import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
+import com.github.freedownloadhere.pitplayer.state.StateMachine
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import java.util.PriorityQueue

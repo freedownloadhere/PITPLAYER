@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.pathing
 
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.util.Vec3
@@ -13,33 +13,6 @@ object Pathfinder {
     ) {
         val f : Double
             get() = g + h
-    }
-
-    private enum class Directions(val vec : Vec3i, val cost : Double) {
-        PX(Vec3i(1, 0, 0), 1.0),
-        PZ(Vec3i(0, 0, 1), 1.0),
-        NX(Vec3i(-1, 0, 0), 1.0),
-        NZ(Vec3i(0, 0, -1), 1.0),
-
-        DiagPXPZ(Vec3i(1, 0, 1), 1.4),
-        DiagPXNZ(Vec3i(1, 0, -1), 1.4),
-        DiagNXPZ(Vec3i(-1, 0, 1), 1.4),
-        DiagNXNZ(Vec3i(-1, 0, -1), 1.4),
-
-        DownPX(Vec3i(1, -1, 0), 1.4),
-        DownPZ(Vec3i(0, -1, 1), 1.4),
-        DownNX(Vec3i(-1, -1, 0), 1.4),
-        DownNZ(Vec3i(0, -1, -1), 1.4),
-
-        DiagDownPXPZ(Vec3i(1, -1, 1), 1.8),
-        DiagDownPXNZ(Vec3i(1, -1, -1), 1.8),
-        DiagDownNXPZ(Vec3i(-1, -1, 1), 1.8),
-        DiagDownNXNZ(Vec3i(-1, -1, -1), 1.8),
-
-        UpPX(Vec3i(1, 1, 0), 2.0),
-        UpPZ(Vec3i(0, 1, 1), 2.0),
-        UpNX(Vec3i(-1, 1, 0), 2.0),
-        UpNZ(Vec3i(0, 1, -1), 2.0),
     }
 
     private fun isValid(c : Vec3i, n : Vec3i) : Boolean {
@@ -112,9 +85,9 @@ object Pathfinder {
             closed.add(curr.pos)
 
             if(curr.pos.matches(dest))
-                return makeFullPath(curr)
+                return makeSimplePath(curr)
 
-            for(d in Directions.entries) {
+            for(d in blockTypeOf(curr.pos).moveset) {
                 val nextpos = curr.pos.add(d.vec)
 
                 if(closed.contains(nextpos)) continue

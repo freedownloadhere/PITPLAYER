@@ -1,8 +1,12 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.state
 
+import com.github.freedownloadhere.pitplayer.utils.PitArea
+import com.github.freedownloadhere.pitplayer.utils.ScoreboardReader
 import com.github.freedownloadhere.pitplayer.event.*
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
+import com.github.freedownloadhere.pitplayer.modules.CombatModule
+import com.github.freedownloadhere.pitplayer.modules.GPS
 
 object StateMachine : IObserver {
     enum class PlayerAction {

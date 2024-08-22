@@ -1,5 +1,6 @@
-package com.github.freedownloadhere.pitplayer
+package com.github.freedownloadhere.pitplayer.utils
 
+import com.github.freedownloadhere.pitplayer.utils.PlayerRemote
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
 

@@ -1,8 +1,5 @@
 package com.github.freedownloadhere.pitplayer.commands
 
-import com.github.freedownloadhere.pitplayer.Pathfinder
-import com.github.freedownloadhere.pitplayer.extensions.blockBelow
-import com.github.freedownloadhere.pitplayer.extensions.player
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.Vec3i
