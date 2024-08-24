@@ -1,6 +1,8 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
+import com.github.freedownloadhere.pitplayer.Debug
 import com.github.freedownloadhere.pitplayer.extensions.*
+import kotlinx.coroutines.delay
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 
@@ -15,26 +17,12 @@ object Pathfinder {
             get() = g + h
     }
 
-    private fun isValid(c : Vec3i, n : Vec3i) : Boolean {
-        if(!world.isWalkable(n)) return false
-        if(n.x - c.x != 0 && n.z - c.z != 0)
-            if(world.isObstructed(Vec3i(c.x, c.y, n.z)) || world.isObstructed(Vec3i(n.x, c.y, c.z)))
-                return false
-        if(n.y == c.y + 1 && world.isSolid(c.upThree)) return false
-        if(n.y == c.y - 1 && world.isSolid(n.upThree)) return false
-        return true
-    }
-
-    private fun isNotValid(c : Vec3i, n : Vec3i) : Boolean {
-        return !isValid(c, n)
-    }
-
     private fun makeSimplePath(n : Node) : MutableList<Vec3> {
         val l = mutableListOf<Vec3>()
         var c : Node? = n
         var delta1 = Vec3i(0, 0, 0)
         while(c?.next != null) {
-            val delta2 = c.pos.subtract(c.next!!.pos)
+            val delta2 = c.pos - c.next!!.pos
             if(delta1.matches(delta2)) { c = c.next; continue }
             delta1 = delta2
             l.add(c.pos.toVec3().toBlockTop())
@@ -68,7 +56,7 @@ object Pathfinder {
         return best
     }
 
-    fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
+    suspend fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
         if(dest == null || start == null)
             return null
 
@@ -77,8 +65,6 @@ object Pathfinder {
         opened[start] = Node(start, 0.0, 0.0, null)
 
         while(opened.isNotEmpty()) {
-            // gets the node with the lowest F value
-            // and also removes it from the list
             val curr = opened.bestNode()
 
             if(closed.contains(curr.pos)) continue
@@ -87,24 +73,35 @@ object Pathfinder {
             if(curr.pos.matches(dest))
                 return makeSimplePath(curr)
 
-            for(d in blockTypeOf(curr.pos).moveset) {
-                val nextpos = curr.pos.add(d.vec)
+            for(cone in NeighbourCones.entries) {
+                var move : Movement? = null
+                var nextPos : Vec3i? = null
+                for (m in cone.arr) {
+                    nextPos = curr.pos + m.dir
+                    if(closed.contains(nextPos)) continue
+                    if(!PathBlockHelper.isValid(curr.pos, nextPos, m)) continue
+                    move = m
+                    break
+                }
 
-                if(closed.contains(nextpos)) continue
-                if(isNotValid(curr.pos, nextpos)) continue
+                if(move == null || nextPos == null) continue
 
-                // if we already have a shorter path
-                // to the next node, leave it like that
-                val nextg = curr.g + d.cost
-                if(opened.contains(nextpos) && nextg >= opened[nextpos]!!.g) continue
+                val nextG = curr.g + move.cost
+                if(opened.contains(nextPos) && nextG >= opened[nextPos]!!.g) continue
 
-                val nexth = nextpos.distance(dest)
-                opened[nextpos] = Node(nextpos, nextg, nexth, curr)
+                val nextH = nextPos.distance(dest)
+                opened[nextPos] = Node(nextPos, nextG, nextH, curr)
+            }
+
+            if(Debug.pathStep) {
+                Debug.pathStepCount--
+                if(Debug.pathStepCount == 0) {
+                    Debug.pathCurrent = makeFullPath(curr)
+                    while(Debug.pathStepCount == 0) { delay(200L) }
+                }
             }
         }
 
-        // if we get to this point, we
-        // did not find any valid path
         return null
     }
 }

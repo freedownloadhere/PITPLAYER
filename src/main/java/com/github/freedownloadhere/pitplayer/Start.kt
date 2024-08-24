@@ -1,6 +1,7 @@
 package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.commands.BlockLineCommand
+import com.github.freedownloadhere.pitplayer.commands.DebugCommand
 import com.github.freedownloadhere.pitplayer.commands.FightCommand
 import com.github.freedownloadhere.pitplayer.commands.PathfindCommand
 import com.github.freedownloadhere.pitplayer.utils.EventManager
@@ -20,6 +21,7 @@ class Start {
         ClientCommandHandler.instance.registerCommand(PathfindCommand())
         ClientCommandHandler.instance.registerCommand(FightCommand())
         ClientCommandHandler.instance.registerCommand(BlockLineCommand())
+        ClientCommandHandler.instance.registerCommand(DebugCommand())
         for(k in Keybinds.entries)
             ClientRegistry.registerKeyBinding(k.key)
     }

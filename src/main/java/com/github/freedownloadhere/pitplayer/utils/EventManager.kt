@@ -1,9 +1,11 @@
 package com.github.freedownloadhere.pitplayer.utils
 
+import com.github.freedownloadhere.pitplayer.Debug
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import com.github.freedownloadhere.pitplayer.extensions.partialPos
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.modules.GPS
+import com.github.freedownloadhere.pitplayer.pathing.NeighbourCones
 import com.github.freedownloadhere.pitplayer.state.StateMachine
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -29,12 +31,9 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!StateMachine.isIngame()) return
-        if(GPS.route.isNullOrEmpty()) return
-        val lastBlock = GPS.route!!.removeLast()
-        Renderer.blocks(GPS.route!!, Color.GRAY)
-        Renderer.block(lastBlock, Color.GREEN)
-        Renderer.line(player.partialPos, lastBlock, Color.GREEN)
-        GPS.route!!.add(lastBlock)
+        Debug.renderLineOfSight()
+        Debug.renderPathCurrent()
+        GPS.renderPath()
     }
 
     @SubscribeEvent

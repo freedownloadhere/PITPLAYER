@@ -6,9 +6,12 @@ import com.github.freedownloadhere.pitplayer.extensions.toPlayerHead
 import com.github.freedownloadhere.pitplayer.extensions.world
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.utils.PlayerRemote
+import kotlinx.coroutines.launch
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLiving
+import net.minecraft.util.Vec3
 import java.util.*
+import javax.xml.bind.JAXBElement.GlobalScope
 import kotlin.math.floor
 
 object CombatModule {
@@ -49,7 +52,8 @@ object CombatModule {
         makeTargetList()
         while(targetList.isNotEmpty()) {
             val entity = targetList.remove()
-            Pathfinder.pathfind(entity.blockBelow, player.blockBelow) ?: return
+            //TODO lol
+            //Pathfinder.pathfind(entity.blockBelow, player.blockBelow)
             target = entity
             break
         }

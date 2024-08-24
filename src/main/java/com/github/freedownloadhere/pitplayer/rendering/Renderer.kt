@@ -1,13 +1,17 @@
 package com.github.freedownloadhere.pitplayer.rendering
 
+import com.github.freedownloadhere.pitplayer.event.IEvent
+import com.github.freedownloadhere.pitplayer.event.IObserver
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.util.Queue
 
 object Renderer {
     fun text(s : String, x : Int, y : Int) {
@@ -60,6 +64,10 @@ object Renderer {
         highlightEnd()
     }
 
+    fun blockVec3i(posVec3i : Vec3i, color : Color = Color.WHITE) {
+        block(posVec3i.toVec3(), color)
+    }
+
     fun block(pos : Vec3, color : Color = Color.WHITE) {
         val pos1 = pos.toBlockPos().toVec3()
         val corners = arrayListOf(
@@ -101,6 +109,11 @@ object Renderer {
 
     fun blocks(posList : List<Vec3>, color : Color = Color.WHITE) {
         for(pos in posList)
-            block(pos.toBlockPos().toVec3(), color)
+            blockVec3i(pos.toBlockPos(), color)
+    }
+
+    fun blocksVec3i(posListVec3i : List<Vec3i>, color : Color = Color.WHITE) {
+        for(pos in posListVec3i)
+            blockVec3i(pos, color)
     }
 }

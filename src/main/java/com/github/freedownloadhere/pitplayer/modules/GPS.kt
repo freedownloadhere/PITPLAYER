@@ -6,37 +6,28 @@ import com.github.freedownloadhere.pitplayer.event.IObservable
 import com.github.freedownloadhere.pitplayer.event.IObserver
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
+import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import com.github.freedownloadhere.pitplayer.state.StateMachine
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
+import java.awt.Color
 import java.util.PriorityQueue
 import kotlin.math.floor
 
+@OptIn(DelicateCoroutinesApi::class)
 object GPS : IObservable {
     override val observers = arrayListOf<IObserver>(StateMachine)
-
-    val wanderPoints = arrayListOf(Vec3i(0, 81, 0), Vec3i(10, 81, 10), Vec3i(-10, 81, -10))
 
     var route : MutableList<Vec3>? = null
     var dest : Vec3i? = null
 
-    fun findWanderPoint() {
-        val playerPos = player.blockBelow ?: return
-        val queue = PriorityQueue {
-            v1 : Vec3i, v2 : Vec3i -> Int
-            floor(playerPos.distanceSq(v1) - playerPos.distanceSq(v2)).toInt()
-        }
-        while(queue.isNotEmpty()) {
-            val pos = queue.remove()
-            val r = Pathfinder.pathfind(pos, playerPos)
-            if(r.isNullOrEmpty()) continue
-            route = r
-            break
-        }
-    }
-
     fun makeRoute() {
-        route = Pathfinder.pathfind(dest, player.blockBelow)
+        GlobalScope.launch {
+            route = Pathfinder.pathfind(dest, player.blockBelow)
+        }
     }
 
     fun traverseRoute() {
@@ -53,5 +44,14 @@ object GPS : IObservable {
         PlayerRemote.walkForward()
         if(target.y > player.positionVector.y)
             PlayerRemote.jump()
+    }
+
+    fun renderPath() {
+        if(route.isNullOrEmpty()) return
+        val lastBlock = route!!.removeLast()
+        Renderer.blocks(route!!, Color.GRAY)
+        Renderer.block(lastBlock, Color.GREEN)
+        Renderer.line(player.partialPos, lastBlock, Color.GREEN)
+        route!!.add(lastBlock)
     }
 }

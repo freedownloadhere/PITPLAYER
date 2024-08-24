@@ -5,18 +5,6 @@ import net.minecraft.util.Vec3i
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-fun Vec3i.add(other : Vec3i) : Vec3i {
-    return Vec3i(x + other.x, y + other.y, z + other.z)
-}
-
-fun Vec3i.add(x1 : Int, y1 : Int, z1 : Int) : Vec3i {
-    return Vec3i(x + x1, y + y1, z + z1)
-}
-
-fun Vec3i.subtract(other : Vec3i) : Vec3i {
-    return Vec3i(x - other.x, y - other.y, z - other.z)
-}
-
 val Vec3i.downOne : Vec3i
     get() = Vec3i(x, y - 1, z)
 
@@ -28,14 +16,6 @@ val Vec3i.upTwo : Vec3i
 
 val Vec3i.upThree : Vec3i
     get() = Vec3i(x, y + 3, z)
-
-val Vec3i.firstBlockBelow : Vec3i?
-    get() {
-        var pos = this
-        while(pos.y >= 0 && !world.isSolid(pos))
-            pos = pos.downOne
-        return if(pos.y < 0) null else pos
-    }
 
 fun Vec3i.toVec3() : Vec3 {
     return Vec3(x.toDouble(), y.toDouble(), z.toDouble())
@@ -51,4 +31,20 @@ fun Vec3i.distance(other : Vec3i) : Double {
 
 fun Vec3i.matches(other : Vec3i) : Boolean {
     return x == other.x && y == other.y && z == other.z
+}
+
+operator fun Vec3i.plus(other : Vec3i) : Vec3i {
+    return Vec3i(x + other.x, y + other.y, z + other.z)
+}
+
+fun Vec3i.add(x1 : Int, y1 : Int, z1 : Int) : Vec3i {
+    return Vec3i(x + x1, y + y1, z + z1)
+}
+
+operator fun Vec3i.minus(other : Vec3i) : Vec3i {
+    return Vec3i(x - other.x, y - other.y, z - other.z)
+}
+
+operator fun Vec3i.times(scalar : Int) : Vec3i {
+    return Vec3i(x * scalar, y * scalar, z * scalar)
 }

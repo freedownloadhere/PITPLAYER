@@ -39,10 +39,10 @@ object StateMachine : IObserver {
     }
 
     override fun receiveEvent(e: IEvent) {
-        when(e::class) {
-            EventFinishedPathing::class -> finishPathing()
-            EventBeginPathing::class -> beginPathing(e as EventBeginPathing)
-            EventBeginFighting::class -> beginFighting()
+        when(e) {
+            is EventFinishedPathing -> finishPathing()
+            is EventBeginPathing -> beginPathing(e)
+            is EventBeginFighting -> beginFighting()
         }
     }
 
