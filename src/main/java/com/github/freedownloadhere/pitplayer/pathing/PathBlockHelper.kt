@@ -1,13 +1,12 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
-import com.github.freedownloadhere.pitplayer.Debug
 import com.github.freedownloadhere.pitplayer.extensions.*
+import com.github.freedownloadhere.pitplayer.utils.Bresenham
 import net.minecraft.block.Block
 import net.minecraft.block.BlockSlab
 import net.minecraft.block.state.IBlockState
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3i
-import kotlin.math.abs
 
 object PathBlockHelper {
     enum class BlockType {
@@ -46,40 +45,13 @@ object PathBlockHelper {
     private fun hasLineOfSight(curr : Vec3i, next : Vec3i, move : Movement) : Boolean {
         if(move.type == Movement.Type.Walk)
             return isValidWalk(curr, next, move)
+
         if(!isWalkable(next))
             return false
 
-        val l = arrayListOf<Vec3i>()
-        val (x1, x2) = curr.x to next.x
-        val (z1, z2) = curr.z to next.z
-        var x = x1
-        var z = z1
-        var dX = abs(x2 - x1)
-        var dZ = abs(z2 - z1)
-        var swapped = false
-        val sgX = if(x2 - x1 >= 0) 1 else -1
-        val sgZ = if(z2 - z1 >= 0) 1 else -1
-        if(dZ > dX) { val temp = dX; dX = dZ; dZ = temp; swapped = true }
-        var e = 2 * dZ - dX
-        val a = 2 * dZ
-        val b = 2 * dZ - 2 * dX
-        for(i in 1..dX) {
-            if(e < 0) {
-                if(swapped) z += sgZ
-                else x += sgX
-                e += a
-            } else {
-                x += sgX
-                z += sgZ
-                e += b
-            }
-            l.add(Vec3i(x, curr.y, z))
-        }
+        val posList = Bresenham.xz(curr, next)
 
-        if(Debug.showLineOfSight)
-            Debug.lineOfSight = l
-
-        return isValidJump(l)
+        return isValidJump(posList)
     }
 
     private fun isValidJump(posList : ArrayList<Vec3i>) : Boolean {

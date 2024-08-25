@@ -3,6 +3,7 @@ import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.AbsoluteDirection.*
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import java.awt.Color
 
 enum class NeighbourCones(val arr : ArrayList<Movement>) {
@@ -23,15 +24,15 @@ enum class NeighbourCones(val arr : ArrayList<Movement>) {
         .finish()
     ),
     PosXPosZ(MovementArrayBuilder()
-        .new().add(PX).add(PZ).name("Walk Diagonally").push()
-        .new().add(PX).add(PZ).add(PZ).name("1 Block L-shape Left").push()
-        .new().add(PX).add(PZ).add(PX).name("1 Block L-shape Right").push()
-        .new().add(PX, 2).add(PZ, 2).name("2 Block Diagonal Jump").push()
-        .new().add(PX, 2).add(PZ, 2).add(PZ).name("2 Block L-shape Left").push()
-        .new().add(PX, 2).add(PZ, 2).add(PX).name("2 Block L-shape Right").push()
-        .new().add(PX, 3).add(PZ, 3).name("3 Block Diagonal Jump").push()
-        .new().add(PX).add(PZ).add(NY).name("Walk Diagonally Down").push()
-        .new().add(PX).add(PZ).add(PY).name("Walk Diagonally Up").push()
+        .new().add(DiagPXPZ).name("Walk Diagonally").push()
+        .new().add(DiagPXPZ).add(PZ).name("1 Block L-shape Left").push()
+        .new().add(DiagPXPZ).add(PX).name("1 Block L-shape Right").push()
+        .new().add(DiagPXPZ, 2).name("2 Block Diagonal Jump").push()
+        .new().add(DiagPXPZ, 2).add(PZ).name("2 Block L-shape Left").push()
+        .new().add(DiagPXPZ, 2).add(PX).name("2 Block L-shape Right").push()
+        .new().add(DiagPXPZ, 3).name("3 Block Diagonal Jump").push()
+        .new().add(DiagPXPZ).add(NY).name("Walk Diagonally Down").push()
+        .new().add(DiagPXPZ).add(PY).name("Walk Diagonally Up").push()
         .finish()
     ),
     PosZ(MovementArrayBuilder()
@@ -65,11 +66,10 @@ enum class NeighbourCones(val arr : ArrayList<Movement>) {
         .finish()
     );
 
-    fun debugDrawCone() {
-        val posList = mutableListOf<Vec3>()
-        val playerPos = player.blockBelow?.toVec3() ?: return
+    fun drawCone(relativeTo : Vec3i) {
+        val posList = mutableListOf<Vec3i>()
         for(move in arr)
-            posList.add(playerPos + move.dir)
-        Renderer.blocks(posList, Color.RED)
+            posList.add(relativeTo + move.dir)
+        Renderer.blocksVec3i(posList, Color.RED)
     }
 }

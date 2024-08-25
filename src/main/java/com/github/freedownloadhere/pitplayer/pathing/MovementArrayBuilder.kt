@@ -22,13 +22,14 @@ class MovementArrayBuilder {
 
     fun add(absdir : AbsoluteDirection, times : Int = 1) : MovementArrayBuilder {
         mdir += absdir.dir * times
-        mcost += absdir.cost
+        mcost += absdir.cost * times
         if(abs(mdir.x) > 1 || abs(mdir.z) > 1)
             mtype = Movement.Type.Jump
         return this
     }
 
     fun add(arr : ArrayList<Movement>) : MovementArrayBuilder {
+        array.addAll(arr)
         return this
     }
 

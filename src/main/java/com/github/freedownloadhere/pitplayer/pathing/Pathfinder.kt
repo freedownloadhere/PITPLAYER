@@ -1,6 +1,6 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
-import com.github.freedownloadhere.pitplayer.Debug
+import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.extensions.*
 import kotlinx.coroutines.delay
 import net.minecraft.util.Vec3
@@ -56,7 +56,18 @@ object Pathfinder {
         return best
     }
 
-    suspend fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
+    fun findClosestValidPos(currPos : Vec3i, cone : NeighbourCones, closed : Set<Vec3i>) : Movement? {
+        var nextPos : Vec3i?
+        for (m in cone.arr) {
+            nextPos = currPos + m.dir
+            if(closed.contains(nextPos)) continue
+            if(!PathBlockHelper.isValid(currPos, nextPos, m)) continue
+            return m
+        }
+        return null
+    }
+
+    fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
         if(dest == null || start == null)
             return null
 
@@ -71,34 +82,15 @@ object Pathfinder {
             closed.add(curr.pos)
 
             if(curr.pos.matches(dest))
-                return makeSimplePath(curr)
+                return makeFullPath(curr)
 
             for(cone in NeighbourCones.entries) {
-                var move : Movement? = null
-                var nextPos : Vec3i? = null
-                for (m in cone.arr) {
-                    nextPos = curr.pos + m.dir
-                    if(closed.contains(nextPos)) continue
-                    if(!PathBlockHelper.isValid(curr.pos, nextPos, m)) continue
-                    move = m
-                    break
-                }
-
-                if(move == null || nextPos == null) continue
-
+                val move = findClosestValidPos(curr.pos, cone, closed) ?: continue
+                val nextPos = curr.pos + move.dir
                 val nextG = curr.g + move.cost
                 if(opened.contains(nextPos) && nextG >= opened[nextPos]!!.g) continue
-
                 val nextH = nextPos.distance(dest)
                 opened[nextPos] = Node(nextPos, nextG, nextH, curr)
-            }
-
-            if(Debug.pathStep) {
-                Debug.pathStepCount--
-                if(Debug.pathStepCount == 0) {
-                    Debug.pathCurrent = makeFullPath(curr)
-                    while(Debug.pathStepCount == 0) { delay(200L) }
-                }
             }
         }
 
