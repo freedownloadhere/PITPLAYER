@@ -1,13 +1,19 @@
-package com.github.freedownloadhere.pitplayer.pathing
+package com.github.freedownloadhere.pitplayer.pathing.moveset
 import com.github.freedownloadhere.pitplayer.extensions.*
-import com.github.freedownloadhere.pitplayer.pathing.AbsoluteDirection.*
+import com.github.freedownloadhere.pitplayer.pathing.moveset.AbsoluteDirection.*
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
-import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import java.awt.Color
 
+/*
+*
+* Misnomer.
+*
+* */
+
 enum class NeighbourCones(val arr : ArrayList<Movement>) {
-    PosX(MovementArrayBuilder()
+    PosX(
+        MovementArrayBuilder()
         .new().add(PX).name("Walk Straight").push()
         .new().add(PX, 2).name("1 Block Jump").push()
         .new().add(PX, 3).name("2 Block Jump").push()
@@ -23,7 +29,8 @@ enum class NeighbourCones(val arr : ArrayList<Movement>) {
         .new().add(PX).add(PY).name("Walk Down").push()
         .finish()
     ),
-    PosXPosZ(MovementArrayBuilder()
+    PosXPosZ(
+        MovementArrayBuilder()
         .new().add(DiagPXPZ).name("Walk Diagonally").push()
         .new().add(DiagPXPZ).add(PZ).name("1 Block L-shape Left").push()
         .new().add(DiagPXPZ).add(PX).name("1 Block L-shape Right").push()
@@ -35,32 +42,38 @@ enum class NeighbourCones(val arr : ArrayList<Movement>) {
         .new().add(DiagPXPZ).add(PY).name("Walk Diagonally Up").push()
         .finish()
     ),
-    PosZ(MovementArrayBuilder()
+    PosZ(
+        MovementArrayBuilder()
         .add(PosX.arr)
         .twist90onXZ()
         .finish()
     ),
-    NegXPosZ(MovementArrayBuilder()
+    NegXPosZ(
+        MovementArrayBuilder()
         .add(PosXPosZ.arr)
         .twist90onXZ()
         .finish()
     ),
-    NegX(MovementArrayBuilder()
+    NegX(
+        MovementArrayBuilder()
         .add(PosZ.arr)
         .twist90onXZ()
         .finish()
     ),
-    NegXNegZ(MovementArrayBuilder()
+    NegXNegZ(
+        MovementArrayBuilder()
         .add(NegXPosZ.arr)
         .twist90onXZ()
         .finish()
     ),
-    NegZ(MovementArrayBuilder()
+    NegZ(
+        MovementArrayBuilder()
         .add(NegX.arr)
         .twist90onXZ()
         .finish()
     ),
-    PosXNegZ(MovementArrayBuilder()
+    PosXNegZ(
+        MovementArrayBuilder()
         .add(NegXNegZ.arr)
         .twist90onXZ()
         .finish()

@@ -1,8 +1,9 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
-import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.extensions.*
-import kotlinx.coroutines.delay
+import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
+import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
+import com.github.freedownloadhere.pitplayer.pathing.utils.PathBlockHelper
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 
@@ -11,6 +12,7 @@ object Pathfinder {
         val pos : Vec3i,
         val g : Double = 0.0,
         val h : Double = 0.0,
+        val flags : Movement.FlagInt,
         val next : Node? = null
     ) {
         val f : Double
@@ -73,7 +75,7 @@ object Pathfinder {
 
         val closed = mutableSetOf<Vec3i>()
         val opened = mutableMapOf<Vec3i, Node>()
-        opened[start] = Node(start, 0.0, 0.0, null)
+        opened[start] = Node(start, 0.0, 0.0, Movement.FlagInt(),null)
 
         while(opened.isNotEmpty()) {
             val curr = opened.bestNode()
@@ -90,7 +92,7 @@ object Pathfinder {
                 val nextG = curr.g + move.cost
                 if(opened.contains(nextPos) && nextG >= opened[nextPos]!!.g) continue
                 val nextH = nextPos.distance(dest)
-                opened[nextPos] = Node(nextPos, nextG, nextH, curr)
+                opened[nextPos] = Node(nextPos, nextG, nextH, move.flags, curr)
             }
         }
 

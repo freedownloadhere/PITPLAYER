@@ -1,7 +1,7 @@
-package com.github.freedownloadhere.pitplayer.pathing
+package com.github.freedownloadhere.pitplayer.pathing.utils
 
 import com.github.freedownloadhere.pitplayer.extensions.*
-import com.github.freedownloadhere.pitplayer.utils.Bresenham
+import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
 import net.minecraft.block.Block
 import net.minecraft.block.BlockSlab
 import net.minecraft.block.state.IBlockState
@@ -43,7 +43,7 @@ object PathBlockHelper {
     }
 
     private fun hasLineOfSight(curr : Vec3i, next : Vec3i, move : Movement) : Boolean {
-        if(move.type == Movement.Type.Walk)
+        if(move.flags == Movement.Flags.Walk)
             return isValidWalk(curr, next, move)
 
         if(!isWalkable(next))

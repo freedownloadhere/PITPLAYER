@@ -2,11 +2,11 @@ package com.github.freedownloadhere.pitplayer.debug
 
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.plus
-import com.github.freedownloadhere.pitplayer.pathing.Movement
-import com.github.freedownloadhere.pitplayer.pathing.NeighbourCones
+import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
+import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
-import com.github.freedownloadhere.pitplayer.utils.Bresenham
+import com.github.freedownloadhere.pitplayer.pathing.utils.Bresenham
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i

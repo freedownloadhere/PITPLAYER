@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer.pathing
+package com.github.freedownloadhere.pitplayer.pathing.moveset
 
 import com.github.freedownloadhere.pitplayer.extensions.plus
 import com.github.freedownloadhere.pitplayer.extensions.times
@@ -10,21 +10,19 @@ class MovementArrayBuilder {
     private var mdir = Vec3i(0, 0, 0)
     private var mcost = 0.0
     private var mname = "Movement"
-    private var mtype = Movement.Type.Walk
+    private var mflags = Movement.FlagInt()
 
     fun new() : MovementArrayBuilder {
         mdir = Vec3i(0, 0, 0)
         mcost = 0.0
         mname = "Movement"
-        mtype = Movement.Type.Walk
+        mflags = Movement.FlagInt()
         return this
     }
 
     fun add(absdir : AbsoluteDirection, times : Int = 1) : MovementArrayBuilder {
         mdir += absdir.dir * times
         mcost += absdir.cost * times
-        if(abs(mdir.x) > 1 || abs(mdir.z) > 1)
-            mtype = Movement.Type.Jump
         return this
     }
 
@@ -39,9 +37,16 @@ class MovementArrayBuilder {
     }
 
     fun push() : MovementArrayBuilder {
-        if(mtype == Movement.Type.Jump)
+        if(abs(mdir.x) <= 1 && abs(mdir.y) <= 1 && abs(mdir.z) <= 1)
+            mflags.add(Movement.Flags.Adjacent)
+        if(mdir.y > 0)
+            mflags.add(Movement.Flags.Jump)
+        else if(mdir.y < 0)
+            mflags.add(Movement.Flags.Fall)
+
+        if(mflags.read(Movement.Flags.Jump))
             mcost *= 1.25
-        array.add(Movement(mdir, mcost, mname, mtype))
+        array.add(Movement(mdir, mcost, mname, mflags))
         return this
     }
 
@@ -50,7 +55,7 @@ class MovementArrayBuilder {
         val newArray = arrayListOf<Movement>()
         for(i in array) {
             val newDir = Vec3i(-i.dir.z, i.dir.y, i.dir.x)
-            newArray.add(Movement(newDir, i.cost, i.name, i.type))
+            newArray.add(Movement(newDir, i.cost, i.name, i.flags))
         }
         array.clear()
         array.addAll(newArray)

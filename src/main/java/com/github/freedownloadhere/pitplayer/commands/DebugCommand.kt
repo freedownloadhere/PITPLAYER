@@ -1,8 +1,7 @@
 package com.github.freedownloadhere.pitplayer.commands
 
 import com.github.freedownloadhere.pitplayer.debug.Debug
-import com.github.freedownloadhere.pitplayer.pathing.NeighbourCones
-import com.github.freedownloadhere.pitplayer.utils.Bresenham
+import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.Vec3i

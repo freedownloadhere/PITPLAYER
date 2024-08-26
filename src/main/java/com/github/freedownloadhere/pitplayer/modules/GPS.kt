@@ -1,6 +1,6 @@
 package com.github.freedownloadhere.pitplayer.modules
 
-import com.github.freedownloadhere.pitplayer.utils.PlayerRemote
+import com.github.freedownloadhere.pitplayer.utils.PlayerHelper
 import com.github.freedownloadhere.pitplayer.event.EventFinishedPathing
 import com.github.freedownloadhere.pitplayer.event.IObservable
 import com.github.freedownloadhere.pitplayer.event.IObserver
@@ -14,8 +14,6 @@ import kotlinx.coroutines.launch
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import java.awt.Color
-import java.util.PriorityQueue
-import kotlin.math.floor
 
 @OptIn(DelicateCoroutinesApi::class)
 object GPS : IObservable {
@@ -31,7 +29,7 @@ object GPS : IObservable {
     }
 
     fun traverseRoute() {
-        PlayerRemote.reset()
+        PlayerHelper.reset()
 
         if(route == null) { dest = null; dispatch(EventFinishedPathing()); return }
         while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last()) <= 0.5)
@@ -39,11 +37,12 @@ object GPS : IObservable {
         if(route!!.isEmpty()) { dest = null; dispatch(EventFinishedPathing()); return }
 
         val target = route!!.last()
-        PlayerRemote.lookAtYaw(target)
-        PlayerRemote.lookForward()
-        PlayerRemote.walkForward()
+        PlayerHelper.lookAtYaw(target)
+        PlayerHelper.lookForward()
+        PlayerHelper.walkForward()
+
         if(target.y > player.positionVector.y)
-            PlayerRemote.jump()
+            PlayerHelper.jump()
     }
 
     fun renderPath() {

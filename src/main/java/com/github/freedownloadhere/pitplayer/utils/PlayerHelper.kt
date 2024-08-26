@@ -6,7 +6,7 @@ import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
 
-object PlayerRemote {
+object PlayerHelper {
     var enabled : Boolean = true
         private set
     val state : String

@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer.utils
+package com.github.freedownloadhere.pitplayer.pathing.utils
 
 import net.minecraft.util.Vec3i
 import kotlin.math.abs

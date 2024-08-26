@@ -4,14 +4,10 @@ import com.github.freedownloadhere.pitplayer.extensions.blockBelow
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.toPlayerHead
 import com.github.freedownloadhere.pitplayer.extensions.world
-import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
-import com.github.freedownloadhere.pitplayer.utils.PlayerRemote
-import kotlinx.coroutines.launch
+import com.github.freedownloadhere.pitplayer.utils.PlayerHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLiving
-import net.minecraft.util.Vec3
 import java.util.*
-import javax.xml.bind.JAXBElement.GlobalScope
 import kotlin.math.floor
 
 object CombatModule {
@@ -65,6 +61,6 @@ object CombatModule {
         GPS.dest = targetPos
         GPS.makeRoute()
         GPS.traverseRoute()
-        PlayerRemote.attack()
+        PlayerHelper.attack()
     }
 }

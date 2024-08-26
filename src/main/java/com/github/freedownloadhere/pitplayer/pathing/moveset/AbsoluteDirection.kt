@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer.pathing
+package com.github.freedownloadhere.pitplayer.pathing.moveset
 
 import net.minecraft.util.Vec3i
 
