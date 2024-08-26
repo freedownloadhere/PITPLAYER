@@ -2,6 +2,7 @@ package com.github.freedownloadhere.pitplayer.pathing.utils
 
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
+import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockSlab
 import net.minecraft.block.state.IBlockState
@@ -43,7 +44,7 @@ object PathBlockHelper {
     }
 
     private fun hasLineOfSight(curr : Vec3i, next : Vec3i, move : Movement) : Boolean {
-        if(move.flags == Movement.Flags.Walk)
+        if(move.flags.read(Flags.Walk) || move.flags.read(Flags.Adjacent))
             return isValidWalk(curr, next, move)
 
         if(!isWalkable(next))
@@ -82,7 +83,7 @@ object PathBlockHelper {
     }
 
     private fun typeOf(pos : Vec3i) : BlockType {
-        val bs = blockState(pos);
+        val bs = blockState(pos)
         val b = bs.block
         if(b is BlockSlab) {
             if(b.isDouble) return BlockType.Full

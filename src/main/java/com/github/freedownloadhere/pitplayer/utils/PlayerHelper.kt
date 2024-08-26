@@ -1,39 +1,47 @@
 package com.github.freedownloadhere.pitplayer.utils
 
 import com.github.freedownloadhere.pitplayer.extensions.*
+import com.github.freedownloadhere.pitplayer.mixin.AccessorKeyBinding
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.Vec3
+import java.lang.reflect.Field
 import kotlin.math.atan2
 import kotlin.math.hypot
 
 object PlayerHelper {
-    var enabled : Boolean = true
-        private set
+    private var enabled : Boolean = true
     val state : String
         get() = "\u00A7lRemote: \u00A7${if(enabled) "aYes" else "cNo"}"
-
-    private enum class Key(private val key : KeyBinding, private var active : Boolean = false) {
-        Forward(mc.gameSettings.keyBindForward),
-        Jump(mc.gameSettings.keyBindJump),
-        Attack(mc.gameSettings.keyBindAttack);
-        fun reset() { if(active) release() }
-        fun hold() { key.hold(); active = true }
-        fun press() { key.press() }
-        fun release() { key.release(); active = false }
-    }
+    val ingame : Boolean
+        get() = mc.thePlayer != null && mc.theWorld != null
+    private val affectedKeys = mutableSetOf<AccessorKeyBinding>()
 
     fun toggle() {
         enabled = !enabled
-        reset()
+        if(!enabled) reset()
     }
 
     fun reset() {
-        for(k in Key.entries) k.reset()
+        for(key in affectedKeys) {
+            key.pressed_pitplayer = false
+            key.pressTime_pitplayer = 0
+        }
+        affectedKeys.clear()
     }
 
-    fun lookForward() {
+    fun press(key : KeyBinding) {
         if(!enabled) return
-        player.rotationPitch = 0.0f
+        val accessor = key as AccessorKeyBinding
+        affectedKeys.add(accessor)
+        accessor.pressed_pitplayer = true
+    }
+
+    fun release(key : KeyBinding) {
+        if(!enabled) return
+        val accessor = key as AccessorKeyBinding
+        affectedKeys.add(accessor)
+        accessor.pressed_pitplayer = false
+        accessor.pressTime_pitplayer = 0
     }
 
     fun lookAtYaw(pos : Vec3) {
@@ -54,34 +62,8 @@ object PlayerHelper {
         player.rotationPitch += deltaPitch
     }
 
-    fun lookAt(pos : Vec3) {
+    fun lookForward() {
         if(!enabled) return
-        lookAtYaw(pos)
-        lookAtPitch(pos)
-    }
-
-    fun walkForward() {
-        if(!enabled) return
-        Key.Forward.hold()
-    }
-
-    fun stopWalking() {
-        if(!enabled) return
-        Key.Forward.reset()
-    }
-
-    fun jump() {
-        if(!enabled) return
-        Key.Jump.hold()
-    }
-
-    fun stopJumping() {
-        if(!enabled) return
-        Key.Jump.reset()
-    }
-
-    fun attack() {
-        if(!enabled) return
-        Key.Attack.press()
+        player.rotationPitch = 0.0f
     }
 }

@@ -36,6 +36,11 @@ class DebugCommand : CommandBase() {
                 val cone = NeighbourCones.entries[args[4].toInt()]
                 Debug.computeClosestValid(pos, cone)
             }
+            "route" -> {
+                if(args.size < 4) return
+                val pos = Vec3i(args[1].toInt(), args[2].toInt(), args[3].toInt())
+                Debug.createRoute(pos)
+            }
         }
     }
 

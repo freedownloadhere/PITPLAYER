@@ -1,13 +1,9 @@
 package com.github.freedownloadhere.pitplayer.modules
 
 import com.github.freedownloadhere.pitplayer.utils.PlayerHelper
-import com.github.freedownloadhere.pitplayer.event.EventFinishedPathing
-import com.github.freedownloadhere.pitplayer.event.IObservable
-import com.github.freedownloadhere.pitplayer.event.IObserver
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
-import com.github.freedownloadhere.pitplayer.state.StateMachine
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -16,33 +12,32 @@ import net.minecraft.util.Vec3i
 import java.awt.Color
 
 @OptIn(DelicateCoroutinesApi::class)
-object GPS : IObservable {
-    override val observers = arrayListOf<IObserver>(StateMachine)
+object GPS {
+    private var route : MutableList<Vec3>? = null
+    private var dest : Vec3i? = null
 
-    var route : MutableList<Vec3>? = null
-    var dest : Vec3i? = null
-
-    fun makeRoute() {
+    fun makeRouteTo(pos : Vec3i) {
         GlobalScope.launch {
+            dest = pos
             route = Pathfinder.pathfind(dest, player.blockBelow)
         }
     }
 
-    fun traverseRoute() {
+    fun updateRouteTraversal() {
         PlayerHelper.reset()
 
-        if(route == null) { dest = null; dispatch(EventFinishedPathing()); return }
+        if(route == null) { dest = null; return }
         while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last()) <= 0.5)
             route!!.removeLast()
-        if(route!!.isEmpty()) { dest = null; dispatch(EventFinishedPathing()); return }
+        if(route!!.isEmpty()) { dest = null; return }
 
         val target = route!!.last()
         PlayerHelper.lookAtYaw(target)
         PlayerHelper.lookForward()
-        PlayerHelper.walkForward()
+        PlayerHelper.press(settings.keyBindForward)
 
         if(target.y > player.positionVector.y)
-            PlayerHelper.jump()
+            PlayerHelper.press(settings.keyBindJump)
     }
 
     fun renderPath() {

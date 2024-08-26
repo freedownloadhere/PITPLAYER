@@ -1,7 +1,5 @@
 package com.github.freedownloadhere.pitplayer.rendering
 
-import com.github.freedownloadhere.pitplayer.event.IEvent
-import com.github.freedownloadhere.pitplayer.event.IObserver
 import com.github.freedownloadhere.pitplayer.extensions.mc
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.*
@@ -11,7 +9,6 @@ import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.util.Queue
 
 object Renderer {
     fun text(s : String, x : Int, y : Int) {
