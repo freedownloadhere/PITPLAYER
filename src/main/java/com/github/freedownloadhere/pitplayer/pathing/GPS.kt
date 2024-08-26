@@ -17,11 +17,12 @@ object GPS {
     private var route : MutableList<Pathfinder.SmallNode>? = null
     private var dest : Vec3i? = null
 
+    val isPathEmptyOrNull : Boolean
+        get() = route.isNullOrEmpty()
+
     fun makeRouteTo(pos : Vec3i) {
-        GlobalScope.launch {
-            dest = pos
-            route = Pathfinder.pathfind(dest, player.blockBelow)
-        }
+        dest = pos
+        route = Pathfinder.pathfind(dest, player.blockBelow)
     }
 
     fun updateRouteTraversal() {

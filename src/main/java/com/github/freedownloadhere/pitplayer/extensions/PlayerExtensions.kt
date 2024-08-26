@@ -8,7 +8,7 @@ val EntityPlayerSP.headPositionVector : Vec3
     get() = positionVector.addVector(0.0, 1.625, 0.0)
 
 val EntityPlayerSP.motionVectorXZ : Vec3
-    get() = Vec3(motionX, 0.0, motionZ) * 2.0
+    get() = Vec3(motionX, 0.0, motionZ) * (0.05 / 0.027)
 
 val EntityPlayerSP.nextPosition : Vec3
     get() = positionVector + player.motionVectorXZ

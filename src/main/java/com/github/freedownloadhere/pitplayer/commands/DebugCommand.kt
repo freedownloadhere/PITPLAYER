@@ -4,11 +4,12 @@ import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
+import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3i
 
 class DebugCommand : CommandBase() {
     override fun getCommandName(): String {
-        return "debug"
+        return "pdebug"
     }
 
     override fun getCommandUsage(sender: ICommandSender?): String {
@@ -41,7 +42,30 @@ class DebugCommand : CommandBase() {
                 val pos = Vec3i(args[1].toInt(), args[2].toInt(), args[3].toInt())
                 Debug.createRoute(pos)
             }
+            "option" -> {
+                if(args.size < 3) return
+                val option = args[1]
+                val value = args[2].toBoolean()
+                Debug.setOption(option, value)
+            }
         }
+    }
+
+    override fun addTabCompletionOptions(
+        sender: ICommandSender?,
+        args: Array<out String>?,
+        pos: BlockPos?
+    ): List<String> {
+
+        if(args == null) return listOf()
+
+        if(args.isEmpty())
+            return getListOfStringsMatchingLastWord(args, listOf("bresenham", "path", "closest", "route", "option"))
+
+        if(args[0] == "option")
+            return getListOfStringsMatchingLastWord(args, Debug.Option.map.keys.toList())
+
+        return listOf()
     }
 
     override fun canCommandSenderUseCommand(sender: ICommandSender?): Boolean {

@@ -13,12 +13,8 @@ object PlayerMovementHelper {
         }
 
     fun shouldJump(to : Pathfinder.SmallNode) : Boolean {
-        if(player.isAirBorne) return false
-
         if(!to.flags.read(Movement.Flags.Jump)) return false
-
         if(to.flags.read(Movement.Flags.Adjacent)) return true
-
         return nextPositionIsChangingBlock
     }
 }
