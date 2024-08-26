@@ -17,8 +17,6 @@ object Renderer {
 
     private fun highlightBegin() {
         GL11.glPushMatrix()
-        val partialPos = player.partialPos
-        GL11.glTranslated(-partialPos.x, -partialPos.y, -partialPos.z)
         GL11.glPushAttrib(GL11.GL_ENABLE_BIT)
         GL11.glDisable(GL11.GL_LIGHTING)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -33,18 +31,28 @@ object Renderer {
         GL11.glPopMatrix()
     }
 
+    private fun useAbsolutePos() {
+        val partialPos = player.partialPositionVector
+        GL11.glTranslated(-partialPos.x, -partialPos.y, -partialPos.z)
+    }
+
     fun line(p1 : Vec3, p2 : Vec3, color : Color = Color.WHITE) {
         highlightBegin()
+        useAbsolutePos()
+
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         worldRenderer.pos(p1.x, p1.y, p1.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         worldRenderer.pos(p2.x, p2.y, p2.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         Tessellator.getInstance().draw()
+
         highlightEnd()
     }
 
     fun lines(posList : List<Vec3>, color : Color = Color.WHITE) {
         highlightBegin()
+        useAbsolutePos()
+
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(i in 0 .. (posList.size - 2)) {
@@ -58,6 +66,7 @@ object Renderer {
                 .endVertex()
         }
         Tessellator.getInstance().draw()
+
         highlightEnd()
     }
 
@@ -91,7 +100,10 @@ object Renderer {
             Pair(6, 7),
             Pair(7, 4)
         )
+
         highlightBegin()
+        useAbsolutePos()
+
         val worldRenderer = Tessellator.getInstance().worldRenderer
         worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
         for(edge in indices) {
@@ -101,6 +113,19 @@ object Renderer {
             worldRenderer.pos(p2.x, p2.y, p2.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
         }
         Tessellator.getInstance().draw()
+
+        highlightEnd()
+    }
+
+    fun vectorFromPlayer(vec : Vec3, color : Color = Color.WHITE) {
+        highlightBegin()
+
+        val worldRenderer = Tessellator.getInstance().worldRenderer
+        worldRenderer.begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(0.0, 0.0, 0.0).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(vec.x, vec.y, vec.z).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        Tessellator.getInstance().draw()
+
         highlightEnd()
     }
 
@@ -113,4 +138,5 @@ object Renderer {
         for(pos in posListVec3i)
             blockVec3i(pos, color)
     }
+
 }

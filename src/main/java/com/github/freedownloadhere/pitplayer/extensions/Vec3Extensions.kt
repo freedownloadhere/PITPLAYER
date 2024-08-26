@@ -33,6 +33,10 @@ operator fun Vec3.plus(other : Vec3) : Vec3 {
     return Vec3(x + other.x, y + other.y, z + other.z)
 }
 
+operator fun Vec3.times(scalar : Double) : Vec3 {
+    return Vec3(scalar * x, scalar * y, scalar * z)
+}
+
 fun Vec3.add(x1 : Double, y1 : Double, z1 : Double) : Vec3 {
     return Vec3(x + x1, y + y1, z + z1)
 }

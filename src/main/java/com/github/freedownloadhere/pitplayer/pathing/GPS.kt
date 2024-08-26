@@ -1,18 +1,20 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
-import com.github.freedownloadhere.pitplayer.utils.PlayerHelper
+import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
 import com.github.freedownloadhere.pitplayer.extensions.*
+import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerMovementHelper
+import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
+import com.github.freedownloadhere.pitplayer.rendering.RendererSmallNodeAdaptor
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import java.awt.Color
 
 @OptIn(DelicateCoroutinesApi::class)
 object GPS {
-    private var route : MutableList<Vec3>? = null
+    private var route : MutableList<Pathfinder.SmallNode>? = null
     private var dest : Vec3i? = null
 
     fun makeRouteTo(pos : Vec3i) {
@@ -23,28 +25,30 @@ object GPS {
     }
 
     fun updateRouteTraversal() {
-        PlayerHelper.reset()
+        PlayerControlHelper.reset()
 
         if(route == null) { dest = null; return }
-        while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last()) <= 0.5)
+        while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last().pos) <= 0.5)
             route!!.removeLast()
         if(route!!.isEmpty()) { dest = null; return }
 
-        val target = route!!.last()
-        PlayerHelper.lookAtYaw(target)
-        PlayerHelper.lookForward()
-        PlayerHelper.press(settings.keyBindForward)
+        val node = route!!.last()
+        PlayerControlHelper.lookAtYaw(node.pos)
+        PlayerControlHelper.lookForward()
+        PlayerControlHelper.press(settings.keyBindForward)
 
-        if(target.y > player.positionVector.y)
-            PlayerHelper.press(settings.keyBindJump)
+        if(PlayerMovementHelper.shouldJump(node))
+            PlayerControlHelper.press(settings.keyBindJump)
     }
 
     fun renderPath() {
         if(route.isNullOrEmpty()) return
-        val lastBlock = route!!.removeLast()
-        Renderer.blocks(route!!, Color.GRAY)
-        Renderer.block(lastBlock, Color.GREEN)
-        Renderer.line(player.partialPos, lastBlock, Color.GREEN)
-        route!!.add(lastBlock)
+
+        val lastNode = route!!.removeLast()
+        RendererSmallNodeAdaptor.blocks(route!!, Color.GRAY)
+        val color = if(lastNode.flags.read(Movement.Flags.Jump)) Color.CYAN else Color.GREEN
+        Renderer.block(lastNode.pos, color)
+        Renderer.line(player.partialPositionVector, lastNode.pos, color)
+        route!!.add(lastNode)
     }
 }

@@ -1,13 +1,13 @@
 package com.github.freedownloadhere.pitplayer.debug
 
-import com.github.freedownloadhere.pitplayer.extensions.player
-import com.github.freedownloadhere.pitplayer.extensions.plus
+import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.GPS
 import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
 import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import com.github.freedownloadhere.pitplayer.pathing.utils.Bresenham
+import com.github.freedownloadhere.pitplayer.rendering.RendererSmallNodeAdaptor
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -28,9 +28,11 @@ object Debug {
     var showBresenham = true
     var showPath = true
     var showClosestValid = true
+    var showMotionVec = false
+    var showNextBlock = false
 
     var bresenhamLine : List<Vec3i>? = null
-    var path : List<Vec3>? = null
+    var path : List<Pathfinder.SmallNode>? = null
     var closestValid : Movement? = null
     var closestValidRelativeTo : Vec3i? = null
     var currentCone : NeighbourCones? = null
@@ -65,7 +67,7 @@ object Debug {
 
     fun renderPath() {
         if(!showPath || path == null) return
-        Renderer.blocks(path!!, Color.GREEN)
+        RendererSmallNodeAdaptor.blocks(path!!, Color.GREEN)
     }
 
     fun renderClosestValid() {
@@ -74,4 +76,16 @@ object Debug {
         Renderer.blockVec3i(closestValidRelativeTo!! + closestValid!!.dir, Color.ORANGE)
     }
 
+    fun renderMotionVec() {
+        if(!showMotionVec) return
+        Renderer.vectorFromPlayer(player.motionVectorXZ, Color.RED)
+    }
+
+    fun renderNextBlock() {
+        if(!showNextBlock) return
+        val pos1 = player.positionVector
+        val pos2 = player.nextPosition
+        val color = if(pos1.toBlockPos().matches(pos2.toBlockPos())) Color.BLUE else Color.RED
+        Renderer.block(pos2, color)
+    }
 }

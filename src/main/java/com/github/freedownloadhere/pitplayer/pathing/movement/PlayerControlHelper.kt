@@ -1,20 +1,20 @@
-package com.github.freedownloadhere.pitplayer.utils
+package com.github.freedownloadhere.pitplayer.pathing.movement
 
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.mixin.AccessorKeyBinding
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.util.Vec3
-import java.lang.reflect.Field
 import kotlin.math.atan2
 import kotlin.math.hypot
 
-object PlayerHelper {
+object PlayerControlHelper {
     private var enabled : Boolean = true
     val state : String
         get() = "\u00A7lRemote: \u00A7${if(enabled) "aYes" else "cNo"}"
     val ingame : Boolean
         get() = mc.thePlayer != null && mc.theWorld != null
     private val affectedKeys = mutableSetOf<AccessorKeyBinding>()
+
 
     fun toggle() {
         enabled = !enabled
@@ -46,7 +46,7 @@ object PlayerHelper {
 
     fun lookAtYaw(pos : Vec3) {
         if(!enabled) return
-        val distance = pos.subtract(player.headPosVector)
+        val distance = pos.subtract(player.headPositionVector)
         val playerYaw = player.rotationYaw.cropAngle180()
         val posYaw = -atan2(distance.x, distance.z).toDegrees().toFloat().cropAngle180()
         val deltaYaw = (posYaw - playerYaw).cropAngle180()
@@ -55,7 +55,7 @@ object PlayerHelper {
 
     fun lookAtPitch(pos : Vec3) {
         if(!enabled) return
-        val distance = pos.subtract(player.headPosVector)
+        val distance = pos.subtract(player.headPositionVector)
         val playerPitch = player.rotationPitch
         val posPitch = -atan2(distance.y, hypot(distance.x, distance.z)).toDegrees().toFloat()
         val deltaPitch = posPitch - playerPitch

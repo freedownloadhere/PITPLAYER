@@ -19,25 +19,30 @@ object Pathfinder {
             get() = g + h
     }
 
-    private fun makeSimplePath(n : Node) : MutableList<Vec3> {
-        val l = mutableListOf<Vec3>()
+    data class SmallNode(
+        val pos : Vec3,
+        val flags : Movement.FlagInt
+    )
+
+    private fun makeSimplePath(n : Node) : MutableList<SmallNode> {
+        val l = mutableListOf<SmallNode>()
         var c : Node? = n
         var delta1 = Vec3i(0, 0, 0)
         while(c?.next != null) {
             val delta2 = c.pos - c.next!!.pos
             if(delta1.matches(delta2)) { c = c.next; continue }
             delta1 = delta2
-            l.add(c.pos.toVec3().toBlockTop())
+            l.add(SmallNode(c.pos.toVec3().toBlockTop(), c.flags))
             c = c.next
         }
         return l
     }
 
-    private fun makeFullPath(n : Node) : MutableList<Vec3> {
-        val l = mutableListOf<Vec3>()
+    private fun makeFullPath(n : Node) : MutableList<SmallNode> {
+        val l = mutableListOf<SmallNode>()
         var c : Node? = n
         while(c != null) {
-            l.add(c.pos.toVec3().toBlockTop())
+            l.add(SmallNode(c.pos.toVec3().toBlockTop(), c.flags))
             c = c.next
         }
         return l
@@ -69,7 +74,7 @@ object Pathfinder {
         return null
     }
 
-    fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<Vec3>? {
+    fun pathfind(dest : Vec3i?, start : Vec3i?) : MutableList<SmallNode>? {
         if(dest == null || start == null)
             return null
 

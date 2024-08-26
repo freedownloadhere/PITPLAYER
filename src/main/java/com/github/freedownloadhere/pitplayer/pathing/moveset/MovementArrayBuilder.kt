@@ -39,7 +39,7 @@ class MovementArrayBuilder {
     fun push() : MovementArrayBuilder {
         if(abs(mdir.x) <= 1 && abs(mdir.y) <= 1 && abs(mdir.z) <= 1)
             mflags.add(Movement.Flags.Adjacent)
-        if(mdir.y > 0)
+        if(mdir.y > 0 || !mflags.read(Movement.Flags.Adjacent))
             mflags.add(Movement.Flags.Jump)
         else if(mdir.y < 0)
             mflags.add(Movement.Flags.Fall)
