@@ -1,8 +1,7 @@
-package com.github.freedownloadhere.pitplayer.modules
+package com.github.freedownloadhere.pitplayer.pathing
 
 import com.github.freedownloadhere.pitplayer.utils.PlayerHelper
 import com.github.freedownloadhere.pitplayer.extensions.*
-import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

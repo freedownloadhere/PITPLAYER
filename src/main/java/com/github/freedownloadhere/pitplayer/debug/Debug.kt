@@ -2,7 +2,7 @@ package com.github.freedownloadhere.pitplayer.debug
 
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.plus
-import com.github.freedownloadhere.pitplayer.modules.GPS
+import com.github.freedownloadhere.pitplayer.pathing.GPS
 import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
 import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
