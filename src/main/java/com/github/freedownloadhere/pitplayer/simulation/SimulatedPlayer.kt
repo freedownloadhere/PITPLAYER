@@ -82,10 +82,6 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
                 entity.onCollideWithPlayer(this)
     }
 
-    override fun onUpdate() {
-        super.onUpdate()
-    }
-
     private fun onLivingUpdate2() {
         jumpTicks = max(0, jumpTicks - 1)
 

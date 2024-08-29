@@ -1,4 +1,4 @@
-package com.github.freedownloadhere.pitplayer.pathing.movement
+package com.github.freedownloadhere.pitplayer.utils
 
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.mixin.AccessorKeyBinding
