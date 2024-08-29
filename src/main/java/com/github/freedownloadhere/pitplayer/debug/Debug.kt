@@ -28,7 +28,12 @@ object Debug {
         Logger.regular("Added player in world.")
     }
 
-    fun simulateMove(s : SimulatedMovement) {
-        fakePlayer?.simulate(s)
+    fun simulateMove(arg1 : String, arg2 : String, arg3 : String) {
+        if(fakePlayer == null) return
+        val forward = arg1.toFloat().coerceAtLeast(-1.0f).coerceAtMost(1.0f)
+        val right = arg2.toFloat().coerceAtLeast(-1.0f).coerceAtMost(1.0f)
+        val jump = arg3.toBoolean()
+        val sm = SimulatedMovement(forward, right, jump)
+        fakePlayer!!.simulate(sm)
     }
 }

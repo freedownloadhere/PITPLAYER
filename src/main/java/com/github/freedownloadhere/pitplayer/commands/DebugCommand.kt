@@ -19,10 +19,10 @@ class DebugCommand : CommandBase() {
         if(args == null || args.isEmpty()) return
         when(args[0]) {
             "simulate" -> {
-                if(args.size == 1)
+                if(args.size < 4)
                     Debug.simulateNewPlayer()
                 else
-                    Debug.simulateMove(SimulatedMovement(args[1]))
+                    Debug.simulateMove(args[1], args[2], args[3])
             }
         }
     }

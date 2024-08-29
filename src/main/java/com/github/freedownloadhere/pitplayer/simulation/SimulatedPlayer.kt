@@ -1,6 +1,7 @@
 package com.github.freedownloadhere.pitplayer.simulation
 
 import com.github.freedownloadhere.pitplayer.debug.Debug
+import com.google.common.base.Predicates
 import com.mojang.authlib.GameProfile
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.client.multiplayer.WorldClient
@@ -8,13 +9,10 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EntitySelectors
 import net.minecraft.util.MathHelper
 import kotlin.math.abs
-import kotlin.math.atan
 import kotlin.math.max
-import kotlin.math.min
-
-import com.github.freedownloadhere.pitplayer.simulation.SimulatedMovement.Type.*
 
 class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOtherPlayerMP(world, gameProfile) {
     private var jumpTicks = 0
@@ -27,37 +25,26 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
         isSneaking = false
     }
 
-    fun simulate(s : SimulatedMovement) {
+    fun simulate(sm : SimulatedMovement) {
         resetSimulate()
 
-        for(type in SimulatedMovement.Type.entries) {
-            if (!s.read(type)) continue
-            when (type) {
-                Forward -> moveForward += 1.0f
-                Backward -> moveForward -= 1.0f
-                Right -> moveStrafing += 1.0f
-                Left -> moveStrafing -= 1.0f
-                Jumping -> isJumping = true
-                Sprinting -> isSprinting = true
-                Sneaking -> isSneaking = true
-            }
-            Debug.Logger.regular("Simulating ${type.name}")
-        }
+        moveForward = sm.forward
+        moveStrafing = sm.left
+        isJumping = sm.jump
+        isSprinting = true
+
+        Debug.Logger.regular("Simulating: \u00A73$sm")
 
         fullSimulation()
     }
 
     private fun fullSimulation() {
-        prevPosX = posX
-        prevPosY = posY
-        prevPosZ = posZ
-        prevRotationPitch = rotationPitch
-        prevRotationYaw = rotationYaw
-
-        handleWaterMovement()
+        inWater = worldObj.handleMaterialAcceleration(
+                entityBoundingBox.expand(0.0, -0.4000000059604645, 0.0).contract(0.001, 0.001, 0.001),
+                net.minecraft.block.material.Material.water,
+                this)
 
         flyToggleTimer = max(0, flyToggleTimer - 1)
-        prevCameraYaw = cameraYaw
 
         onLivingUpdate2()
 
@@ -67,13 +54,6 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
         if (isSprinting)
             jumpMovementFactor = (jumpMovementFactor.toDouble() + speedInAir.toDouble() * 0.3).toFloat()
         aiMoveSpeed = iattributeinstance.attributeValue.toFloat()
-
-        var f = MathHelper.sqrt_double(motionX * motionX + motionZ * motionZ)
-        val f1 = (atan(-motionY * 0.20000000298023224) * 15.0).toFloat()
-        f = min(0.1f, f)
-
-        cameraYaw += (f - cameraYaw) * 0.4f
-        cameraPitch += (f1 - cameraPitch) * 0.8f
 
         val axisalignedbb = entityBoundingBox.expand(1.0, 0.5, 1.0)
         val list = worldObj.getEntitiesWithinAABBExcludingEntity(this, axisalignedbb)
@@ -132,7 +112,13 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
         moveForward *= 0.98f
         randomYawVelocity *= 0.9f
         moveEntityWithHeading2(moveStrafing, moveForward)
-        collideWithNearbyEntities()
+
+        val list = worldObj.getEntitiesInAABBexcluding(
+            this,
+            this.entityBoundingBox.expand(0.20000000298023224, 0.0, 0.20000000298023224),
+            Predicates.and(EntitySelectors.NOT_SPECTATING) { pApply1 -> pApply1!!.canBePushed() })
+        for (entity in list)
+            this.collideWithEntity(entity)
     }
 
     private fun moveEntityWithHeading2(strafe: Float, forward: Float) {
