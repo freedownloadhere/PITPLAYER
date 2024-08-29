@@ -8,9 +8,13 @@ import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import com.github.freedownloadhere.pitplayer.pathing.utils.Bresenham
 import com.github.freedownloadhere.pitplayer.rendering.RendererSmallNodeAdaptor
+import com.github.freedownloadhere.pitplayer.simulation.SimulatedMovement
+import com.github.freedownloadhere.pitplayer.simulation.SimulatedPlayer
+import com.mojang.authlib.GameProfile
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3i
 import java.awt.Color
+import java.util.*
 
 object Debug {
     object Logger {
@@ -45,6 +49,7 @@ object Debug {
     private var closestValid : Movement? = null
     private var closestValidRelativeTo : Vec3i? = null
     private var currentCone : NeighbourCones? = null
+    private var fakePlayer : SimulatedPlayer? = null
 
     fun setOption(name : String, value : Boolean) {
         val option = Option.map[name]
@@ -82,6 +87,18 @@ object Debug {
             Logger.regular("Created a route to \u00A73$pos")
     }
 
+    fun simulateNewPlayer() {
+        val fakeGameProfile = GameProfile(UUID.randomUUID(), "Bot")
+        fakePlayer = SimulatedPlayer(world, fakeGameProfile)
+        world.spawnEntityInWorld(fakePlayer)
+        fakePlayer!!.setPosition(0.0, 82.0, 0.0)
+        Logger.regular("Added player in world.")
+    }
+
+    fun simulateMove(s : SimulatedMovement) {
+        fakePlayer?.simulate(s)
+    }
+
     fun renderBresenham() {
         if(!Option.ShowBresenham.enabled || bresenhamLine == null) return
         Renderer.blocksVec3i(bresenhamLine!!, Color.BLUE)
@@ -104,11 +121,11 @@ object Debug {
     }
 
     fun renderNextBlock() {
-        if(!Option.ShowNextBlock.enabled) return
-        val pos1 = player.positionVector
-        val pos2 = player.nextPosition
-        val color = if(pos1.toBlockPos().matches(pos2.toBlockPos())) Color.BLUE else Color.RED
-        Renderer.block(pos2, color)
+        // if(!Option.ShowNextBlock.enabled) return
+        // val pos1 = player.positionVector
+        // val pos2 = player.nextPosition
+        // val color = if(pos1.toBlockPos().matches(pos2.toBlockPos())) Color.BLUE else Color.RED
+        // Renderer.block(pos2, color)
         // println("Pos1: \u00A73$pos1 | Pos2: \u00A73$pos2")
         // println("Pos1Block: \u00A73${pos1.toBlockPos()} | Pos2: \u00A73${pos2.toBlockPos()}")
     }

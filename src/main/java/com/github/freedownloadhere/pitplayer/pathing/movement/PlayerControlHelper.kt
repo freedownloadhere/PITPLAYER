@@ -64,6 +64,6 @@ object PlayerControlHelper {
 
     fun lookForward() {
         if(!enabled) return
-        player.rotationPitch = 0.0f
+        player.rotationPitch = 89.9f
     }
 }

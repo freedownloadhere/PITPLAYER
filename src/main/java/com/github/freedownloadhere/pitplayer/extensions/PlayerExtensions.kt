@@ -10,9 +10,6 @@ val EntityPlayerSP.headPositionVector : Vec3
 val EntityPlayerSP.motionVectorXZ : Vec3
     get() = Vec3(motionX, 0.0, motionZ) * (0.05 / 0.027)
 
-val EntityPlayerSP.nextPosition : Vec3
-    get() = positionVector + player.motionVectorXZ
-
 val EntityPlayerSP.partialPositionVector : Vec3
     get() {
         val partialTicks = (mc as AccessorMinecraft).timer_pitplayer.renderPartialTicks.toDouble()

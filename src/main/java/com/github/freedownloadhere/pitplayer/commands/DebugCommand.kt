@@ -2,6 +2,7 @@ package com.github.freedownloadhere.pitplayer.commands
 
 import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
+import com.github.freedownloadhere.pitplayer.simulation.SimulatedMovement
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
@@ -47,6 +48,12 @@ class DebugCommand : CommandBase() {
                 val option = args[1]
                 val value = args[2].toBoolean()
                 Debug.setOption(option, value)
+            }
+            "simulate" -> {
+                if(args.size == 1)
+                    Debug.simulateNewPlayer()
+                else
+                    Debug.simulateMove(SimulatedMovement(args[1]))
             }
         }
     }

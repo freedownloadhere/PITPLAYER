@@ -12,7 +12,6 @@ import kotlinx.coroutines.launch
 import net.minecraft.util.Vec3i
 import java.awt.Color
 
-@OptIn(DelicateCoroutinesApi::class)
 object GPS {
     private var route : MutableList<Pathfinder.SmallNode>? = null
     private var dest : Vec3i? = null
@@ -27,11 +26,7 @@ object GPS {
 
     fun updateRouteTraversal() {
         PlayerControlHelper.reset()
-
-        if(route == null) { dest = null; return }
-        while(route!!.isNotEmpty() && player.positionVector.squareDistanceToXZ(route!!.last().pos) <= 0.5)
-            route!!.removeLast()
-        if(route!!.isEmpty()) { dest = null; return }
+        if(route.isNullOrEmpty()) { dest = null; return }
 
         val node = route!!.last()
         PlayerControlHelper.lookAtYaw(node.pos)
@@ -40,6 +35,13 @@ object GPS {
 
         if(PlayerMovementHelper.shouldJump(node))
             PlayerControlHelper.press(settings.keyBindJump)
+
+        val nodePos = node.pos.toBlockPos()
+        val nodePosXZ = Vec3i(nodePos.x, 0, nodePos.z)
+        val playerPos = player.positionVector.toBlockPos()
+        val playerPosXZ = Vec3i(playerPos.x, 0, playerPos.z)
+        if(nodePosXZ.matches(playerPosXZ))
+            route!!.removeLast()
     }
 
     fun renderPath() {
