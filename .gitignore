@@ -1,9 +1,5 @@
 .idea/
 .vscode/
-run/*
+run/
 build/
 .gradle/
-
-!run/mods
-!run/resourcepacks
-!run/options.txt
