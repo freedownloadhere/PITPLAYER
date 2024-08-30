@@ -25,7 +25,7 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
         isSneaking = false
     }
 
-    fun simulate(sm : SimulatedMovement) {
+    fun simulate(sm: SimulatedMovement) {
         resetSimulate()
 
         moveForward = sm.forward
@@ -40,9 +40,10 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
 
     private fun fullSimulation() {
         inWater = worldObj.handleMaterialAcceleration(
-                entityBoundingBox.expand(0.0, -0.4000000059604645, 0.0).contract(0.001, 0.001, 0.001),
-                net.minecraft.block.material.Material.water,
-                this)
+            entityBoundingBox.expand(0.0, -0.4, 0.0).contract(0.001, 0.001, 0.001),
+            net.minecraft.block.material.Material.water,
+            this
+        )
 
         flyToggleTimer = max(0, flyToggleTimer - 1)
 
@@ -52,13 +53,13 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
         iattributeinstance.baseValue = capabilities.walkSpeed.toDouble()
         jumpMovementFactor = speedInAir
         if (isSprinting)
-            jumpMovementFactor = (jumpMovementFactor.toDouble() + speedInAir.toDouble() * 0.3).toFloat()
+            jumpMovementFactor += speedInAir * 0.3f
         aiMoveSpeed = iattributeinstance.attributeValue.toFloat()
 
         val axisalignedbb = entityBoundingBox.expand(1.0, 0.5, 1.0)
         val list = worldObj.getEntitiesWithinAABBExcludingEntity(this, axisalignedbb)
         for (entity in list)
-            if(!entity.isDead)
+            if (!entity.isDead)
                 entity.onCollideWithPlayer(this)
     }
 
@@ -95,46 +96,39 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
             updateEntityActionState()
         }
 
-        if (isJumping) {
-            if (isInWater) {
-                updateAITick()
-            } else if (isInLava) {
-                handleJumpLava()
-            } else if (onGround && jumpTicks == 0) {
-                jump()
-                jumpTicks = 10
-            }
-        } else {
-            jumpTicks = 0
+        if (!isJumping) jumpTicks = 0
+        else if (isInWater) updateAITick()
+        else if (isInLava) handleJumpLava()
+        else if (onGround && jumpTicks == 0) {
+            jump()
+            jumpTicks = 10
         }
 
         moveStrafing *= 0.98f
         moveForward *= 0.98f
         randomYawVelocity *= 0.9f
-        moveEntityWithHeading2(moveStrafing, moveForward)
+        if (!capabilities.isFlying) {
+            moveEntityWithHeading3(moveStrafing, moveForward)
+        } else {
+            val copyMotionY = motionY
+            val copyJumpMovementFactor = jumpMovementFactor
+
+            jumpMovementFactor = capabilities.flySpeed * (if (isSprinting) 2 else 1).toFloat()
+            moveEntityWithHeading3(moveStrafing, moveForward)
+
+            motionY = copyMotionY * 0.6
+            jumpMovementFactor = copyJumpMovementFactor
+        }
 
         val list = worldObj.getEntitiesInAABBexcluding(
             this,
-            this.entityBoundingBox.expand(0.20000000298023224, 0.0, 0.20000000298023224),
+            this.entityBoundingBox.expand(0.2, 0.0, 0.2),
             Predicates.and(EntitySelectors.NOT_SPECTATING) { pApply1 -> pApply1!!.canBePushed() })
         for (entity in list)
-            this.collideWithEntity(entity)
+            collideWithEntity(entity)
     }
 
-    private fun moveEntityWithHeading2(strafe: Float, forward: Float) {
-        if (capabilities.isFlying && this.ridingEntity == null) {
-            val d3 = this.motionY
-            val f = this.jumpMovementFactor
-            this.jumpMovementFactor = capabilities.flySpeed * (if (this.isSprinting) 2 else 1).toFloat()
-            moveEntityWithHeading3(strafe, forward)
-            this.motionY = d3 * 0.6
-            this.jumpMovementFactor = f
-        } else {
-            moveEntityWithHeading3(strafe, forward)
-        }
-    }
-
-    private fun moveEntityWithHeading3(strafe : Float, forward : Float) {
+    private fun moveEntityWithHeading3(strafe: Float, forward: Float) {
         val d0: Double
         var f3: Float
         var f5: Float
@@ -150,11 +144,11 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
                 this.motionY -= 0.02
                 if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(
                         this.motionX,
-                        this.motionY + 0.6000000238418579 - this.posY + d0,
+                        this.motionY + 0.6 - this.posY + d0,
                         this.motionZ
                     )
                 ) {
-                    this.motionY = 0.30000001192092896
+                    this.motionY = 0.3
                 }
             } else {
                 var f4 = 0.91f
@@ -230,7 +224,7 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
                     this.motionY -= 0.08
                 }
 
-                this.motionY *= 0.9800000190734863
+                this.motionY *= 0.98
                 this.motionX *= f4.toDouble()
                 this.motionZ *= f4.toDouble()
             }
@@ -255,16 +249,16 @@ class SimulatedPlayer(world: WorldClient, gameProfile: GameProfile) : EntityOthe
             this.moveFlying(strafe, forward, f6)
             this.moveEntity(this.motionX, this.motionY, this.motionZ)
             this.motionX *= f5.toDouble()
-            this.motionY *= 0.800000011920929
+            this.motionY *= 0.8
             this.motionZ *= f5.toDouble()
             this.motionY -= 0.02
             if (this.isCollidedHorizontally && this.isOffsetPositionInLiquid(
                     this.motionX,
-                    this.motionY + 0.6000000238418579 - this.posY + d0,
+                    this.motionY + 0.6 - this.posY + d0,
                     this.motionZ
                 )
             ) {
-                this.motionY = 0.30000001192092896
+                this.motionY = 0.3
             }
         }
     }
