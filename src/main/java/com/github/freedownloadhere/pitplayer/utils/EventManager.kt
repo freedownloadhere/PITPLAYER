@@ -4,10 +4,12 @@ import com.github.freedownloadhere.pitplayer.combat.AutoFighter
 import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.TerrainTraversal
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
-import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerMovementHelper
-import com.github.freedownloadhere.pitplayer.rendering.Renderer
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
+import net.minecraftforge.event.entity.player.AttackEntityEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -20,7 +22,15 @@ class EventManager {
         if(e.phase != TickEvent.Phase.END) return
 
         TerrainTraversal.updateRouteTraversal()
-        AutoFighter.attackTarget()
+        AutoFighter.update()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    @SubscribeEvent
+    fun onAttackEntity(e : AttackEntityEvent) {
+        if(e.target == null) return
+        if(e.target == AutoFighter.target)
+            GlobalScope.launch { AutoFighter.onAttack() }
     }
 
     @SubscribeEvent

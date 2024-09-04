@@ -1,14 +1,19 @@
 package com.github.freedownloadhere.pitplayer.combat
 
+import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.settings
 import com.github.freedownloadhere.pitplayer.extensions.world
+import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
+import kotlinx.coroutines.delay
 import net.minecraft.entity.EntityLiving
+import kotlin.random.Random
 
-object AutoFighter {
+object AutoFighter : Toggleable(true) {
     var target : EntityLiving? = null
         private set
+    var justAttacked : Boolean = false
 
     fun findTarget() {
         val entityList = world.loadedEntityList
@@ -30,12 +35,30 @@ object AutoFighter {
         }
     }
 
-    fun attackTarget() {
-        if(target == null || target!!.isDead) return
+    fun update() {
+        if(target?.isDead == true)
+            onTargetLost()
+        if(target == null)
+            return
+        AutoClicker.enable()
         PlayerControlHelper.lookAt(target!!)
-        PlayerControlHelper.press(settings.keyBindAttack)
         PlayerControlHelper.press(settings.keyBindForward)
-        PlayerControlHelper.press(settings.keyBindJump)
+    }
+
+    suspend fun onAttack() {
+        if(justAttacked) return
+        Debug.Logger.regular("Attacked target..")
+        justAttacked = true
+        PlayerControlHelper.press(settings.keyBindUseItem)
+        delay(50L)
+        PlayerControlHelper.release(settings.keyBindUseItem)
+        justAttacked = false
+    }
+
+    private fun onTargetLost() {
+        target = null
+        AutoClicker.disable()
+        Debug.Logger.regular("Target was lost")
     }
 
     private fun isEntityReachable(entity : EntityLiving) : Boolean {

@@ -35,6 +35,7 @@ object PlayerControlHelper {
         val accessor = key as AccessorKeyBinding
         affectedKeys.add(accessor)
         accessor.pressed_pitplayer = true
+        accessor.pressTime_pitplayer = 1
     }
 
     fun release(key : KeyBinding) {
