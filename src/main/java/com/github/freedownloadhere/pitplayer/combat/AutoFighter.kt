@@ -6,12 +6,12 @@ import com.github.freedownloadhere.pitplayer.extensions.settings
 import com.github.freedownloadhere.pitplayer.extensions.world
 import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
-import kotlinx.coroutines.delay
 import net.minecraft.entity.EntityLiving
-import kotlin.random.Random
 
 object AutoFighter : Toggleable(true) {
     var target : EntityLiving? = null
+        private set
+    var attackTicks : Int = 0
         private set
     var justAttacked : Boolean = false
 
@@ -20,6 +20,7 @@ object AutoFighter : Toggleable(true) {
         val playerPos = player.positionVector
         var bestDist = Double.MAX_VALUE
 
+        target = null
         for(entity in entityList) {
             if(entity == null) continue
             if(entity == player) continue
@@ -33,6 +34,14 @@ object AutoFighter : Toggleable(true) {
             bestDist = dist;
             target = entity
         }
+
+        if(target != null)
+            onFoundTarget()
+    }
+
+    private fun onFoundTarget() {
+        Debug.Logger.regular("Found target \u00A73${target!!.name}")
+        AutoClicker.enable()
     }
 
     fun update() {
@@ -40,19 +49,24 @@ object AutoFighter : Toggleable(true) {
             onTargetLost()
         if(target == null)
             return
-        AutoClicker.enable()
         PlayerControlHelper.lookAt(target!!)
+        if(justAttacked) {
+            attackTicks = 4
+            justAttacked = false
+        }
+        if(attackTicks > 0) {
+            onAttack()
+            return
+        }
         PlayerControlHelper.press(settings.keyBindForward)
     }
 
-    suspend fun onAttack() {
-        if(justAttacked) return
+    fun onAttack() {
         Debug.Logger.regular("Attacked target..")
-        justAttacked = true
         PlayerControlHelper.press(settings.keyBindUseItem)
-        delay(50L)
+        attackTicks--
+        if(attackTicks > 0) return
         PlayerControlHelper.release(settings.keyBindUseItem)
-        justAttacked = false
     }
 
     private fun onTargetLost() {

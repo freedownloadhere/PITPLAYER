@@ -25,12 +25,11 @@ class EventManager {
         AutoFighter.update()
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onAttackEntity(e : AttackEntityEvent) {
         if(e.target == null) return
-        if(e.target == AutoFighter.target)
-            GlobalScope.launch { AutoFighter.onAttack() }
+        if(e.target == AutoFighter.target && AutoFighter.attackTicks == 0)
+            AutoFighter.justAttacked = true
     }
 
     @SubscribeEvent
