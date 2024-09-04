@@ -3,6 +3,7 @@ package com.github.freedownloadhere.pitplayer.pathing.movement
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.mixin.AccessorKeyBinding
 import net.minecraft.client.settings.KeyBinding
+import net.minecraft.entity.EntityLiving
 import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
@@ -44,6 +45,12 @@ object PlayerControlHelper {
         accessor.pressTime_pitplayer = 0
     }
 
+    fun lookAt(entity : EntityLiving) {
+        val pos = entity.eyePosition
+        lookAtYaw(pos)
+        lookAtPitch(pos)
+    }
+
     fun lookAtYaw(pos : Vec3) {
         if(!enabled) return
         val distance = pos.subtract(player.headPositionVector)
@@ -62,8 +69,8 @@ object PlayerControlHelper {
         player.rotationPitch += deltaPitch
     }
 
-    fun lookForward() {
-        if(!enabled) return
-        player.rotationPitch = 89.9f
+    fun lookAtPitch(pitch : Float) {
+        if(!enabled) return;
+        player.rotationPitch = pitch;
     }
 }

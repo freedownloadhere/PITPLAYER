@@ -2,7 +2,6 @@ package com.github.freedownloadhere.pitplayer.commands
 
 import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
-import com.github.freedownloadhere.pitplayer.simulation.SimulatedMovement
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.util.BlockPos
@@ -43,17 +42,14 @@ class DebugCommand : CommandBase() {
                 val pos = Vec3i(args[1].toInt(), args[2].toInt(), args[3].toInt())
                 Debug.createRoute(pos)
             }
+            "findtarget" -> {
+                Debug.findTarget()
+            }
             "option" -> {
                 if(args.size < 3) return
                 val option = args[1]
                 val value = args[2].toBoolean()
                 Debug.setOption(option, value)
-            }
-            "simulate" -> {
-                if(args.size == 1)
-                    Debug.simulateNewPlayer()
-                else
-                    Debug.simulateMove(SimulatedMovement(args[1]))
             }
         }
     }

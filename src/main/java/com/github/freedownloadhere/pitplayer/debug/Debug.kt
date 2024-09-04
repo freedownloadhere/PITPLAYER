@@ -1,20 +1,18 @@
 package com.github.freedownloadhere.pitplayer.debug
 
+import com.github.freedownloadhere.pitplayer.BotState
+import com.github.freedownloadhere.pitplayer.combat.AutoFighter
 import com.github.freedownloadhere.pitplayer.extensions.*
-import com.github.freedownloadhere.pitplayer.pathing.GPS
+import com.github.freedownloadhere.pitplayer.pathing.TerrainTraversal
 import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
 import com.github.freedownloadhere.pitplayer.pathing.moveset.NeighbourCones
 import com.github.freedownloadhere.pitplayer.pathing.Pathfinder
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import com.github.freedownloadhere.pitplayer.pathing.utils.Bresenham
 import com.github.freedownloadhere.pitplayer.rendering.RendererSmallNodeAdaptor
-import com.github.freedownloadhere.pitplayer.simulation.SimulatedMovement
-import com.github.freedownloadhere.pitplayer.simulation.SimulatedPlayer
-import com.mojang.authlib.GameProfile
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Vec3i
 import java.awt.Color
-import java.util.*
 
 object Debug {
     object Logger {
@@ -49,7 +47,6 @@ object Debug {
     private var closestValid : Movement? = null
     private var closestValidRelativeTo : Vec3i? = null
     private var currentCone : NeighbourCones? = null
-    private var fakePlayer : SimulatedPlayer? = null
 
     fun setOption(name : String, value : Boolean) {
         val option = Option.map[name]
@@ -80,23 +77,19 @@ object Debug {
     }
 
     fun createRoute(pos : Vec3i) {
-        GPS.makeRouteTo(pos)
-        if(GPS.isPathEmptyOrNull)
+        TerrainTraversal.makeRouteTo(pos)
+        if(BotState.path.isNullOrEmpty())
             Logger.alert("The path is empty or null")
         else
             Logger.regular("Created a route to \u00A73$pos")
     }
 
-    fun simulateNewPlayer() {
-        val fakeGameProfile = GameProfile(UUID.randomUUID(), "Bot")
-        fakePlayer = SimulatedPlayer(world, fakeGameProfile)
-        world.spawnEntityInWorld(fakePlayer)
-        fakePlayer!!.setPosition(0.0, 82.0, 0.0)
-        Logger.regular("Added player in world.")
-    }
-
-    fun simulateMove(s : SimulatedMovement) {
-        fakePlayer?.simulate(s)
+    fun findTarget() {
+        AutoFighter.findTarget()
+        if(AutoFighter.target == null)
+            Logger.alert("Did not find a target!")
+        else
+            Logger.regular("Found target at \u00A73${AutoFighter.target!!.positionVector.toBlockPos()}. \u00A7fAttacking..")
     }
 
     fun renderBresenham() {
@@ -118,15 +111,5 @@ object Debug {
     fun renderMotionVec() {
         if(!Option.ShowMotionVec.enabled) return
         Renderer.vectorFromPlayer(player.motionVectorXZ, Color.RED)
-    }
-
-    fun renderNextBlock() {
-        // if(!Option.ShowNextBlock.enabled) return
-        // val pos1 = player.positionVector
-        // val pos2 = player.nextPosition
-        // val color = if(pos1.toBlockPos().matches(pos2.toBlockPos())) Color.BLUE else Color.RED
-        // Renderer.block(pos2, color)
-        // println("Pos1: \u00A73$pos1 | Pos2: \u00A73$pos2")
-        // println("Pos1Block: \u00A73${pos1.toBlockPos()} | Pos2: \u00A73${pos2.toBlockPos()}")
     }
 }

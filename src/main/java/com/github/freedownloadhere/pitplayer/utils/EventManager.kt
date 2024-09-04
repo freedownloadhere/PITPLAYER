@@ -1,8 +1,8 @@
 package com.github.freedownloadhere.pitplayer.utils
 
+import com.github.freedownloadhere.pitplayer.combat.AutoFighter
 import com.github.freedownloadhere.pitplayer.debug.Debug
-import com.github.freedownloadhere.pitplayer.extensions.player
-import com.github.freedownloadhere.pitplayer.pathing.GPS
+import com.github.freedownloadhere.pitplayer.pathing.TerrainTraversal
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerMovementHelper
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
@@ -19,25 +19,24 @@ class EventManager {
         if(!PlayerControlHelper.ingame) return
         if(e.phase != TickEvent.Phase.END) return
 
-        GPS.updateRouteTraversal()
+        TerrainTraversal.updateRouteTraversal()
+        AutoFighter.attackTarget()
     }
 
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!PlayerControlHelper.ingame) return
 
-        GPS.renderPath()
+        TerrainTraversal.renderPath()
         Debug.renderBresenham()
         Debug.renderPath()
         Debug.renderClosestValid()
         Debug.renderMotionVec()
-        Debug.renderNextBlock()
     }
 
     @SubscribeEvent
     fun renderText(e : RenderGameOverlayEvent.Text) {
         if(!PlayerControlHelper.ingame) return
-        Renderer.text("motion vec: ${PlayerMovementHelper.motionVec}", 10, 10)
     }
 
     @SubscribeEvent

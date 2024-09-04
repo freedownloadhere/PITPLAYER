@@ -1,36 +1,28 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
+import com.github.freedownloadhere.pitplayer.BotState
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerMovementHelper
 import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
 import com.github.freedownloadhere.pitplayer.rendering.Renderer
 import com.github.freedownloadhere.pitplayer.rendering.RendererSmallNodeAdaptor
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.minecraft.util.Vec3i
 import java.awt.Color
 
-object GPS {
-    private var route : MutableList<Pathfinder.SmallNode>? = null
-    private var dest : Vec3i? = null
-
-    val isPathEmptyOrNull : Boolean
-        get() = route.isNullOrEmpty()
-
+object TerrainTraversal {
     fun makeRouteTo(pos : Vec3i) {
-        dest = pos
-        route = Pathfinder.pathfind(dest, player.blockBelow)
+        BotState.dest = pos
+        BotState.path = Pathfinder.pathfind(BotState.dest, player.blockBelow)
     }
 
     fun updateRouteTraversal() {
         PlayerControlHelper.reset()
-        if(route.isNullOrEmpty()) { dest = null; return }
+        if(BotState.path.isNullOrEmpty()) { BotState.dest = null; return }
 
-        val node = route!!.last()
+        val node = BotState.path!!.last()
         PlayerControlHelper.lookAtYaw(node.pos)
-        PlayerControlHelper.lookForward()
+        PlayerControlHelper.lookAtPitch(15.0f)
         PlayerControlHelper.press(settings.keyBindForward)
 
         if(PlayerMovementHelper.shouldJump(node))
@@ -41,17 +33,17 @@ object GPS {
         val playerPos = player.positionVector.toBlockPos()
         val playerPosXZ = Vec3i(playerPos.x, 0, playerPos.z)
         if(nodePosXZ.matches(playerPosXZ))
-            route!!.removeLast()
+            BotState.path!!.removeLast()
     }
 
     fun renderPath() {
-        if(route.isNullOrEmpty()) return
+        if(BotState.path.isNullOrEmpty()) return
 
-        val lastNode = route!!.removeLast()
-        RendererSmallNodeAdaptor.blocks(route!!, Color.GRAY)
+        val lastNode = BotState.path!!.removeLast()
+        RendererSmallNodeAdaptor.blocks(BotState.path!!, Color.GRAY)
         val color = if(lastNode.flags.read(Movement.Flags.Jump)) Color.CYAN else Color.GREEN
         Renderer.block(lastNode.pos, color)
         Renderer.line(player.partialPositionVector, lastNode.pos, color)
-        route!!.add(lastNode)
+        BotState.path!!.add(lastNode)
     }
 }
