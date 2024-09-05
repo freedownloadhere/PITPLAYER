@@ -5,9 +5,10 @@ import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.settings
 import com.github.freedownloadhere.pitplayer.extensions.world
 import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
-import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
+import com.github.freedownloadhere.pitplayer.utils.KeyBindHelper
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLiving
+import kotlin.math.max
 import kotlin.random.Random
 
 object AutoFighter : Toggleable(true) {
@@ -29,6 +30,7 @@ object AutoFighter : Toggleable(true) {
     var justAttacked : Boolean = false
     var sprintResetMethod : SprintResetMethod = SprintResetMethod.SneakTap
     var strafeDirection : StrafeDirection = StrafeDirection.Left
+    var strafeSwapCooldown : Int = 10
 
     fun findTarget() {
         val entityList = world.loadedEntityList
@@ -63,11 +65,12 @@ object AutoFighter : Toggleable(true) {
         if(target?.isDead == true) onTargetLost()
         if(target == null) return
 
-        PlayerControlHelper.lookAt(target!!)
+        AimAssist.lookAt(target!!, 0L)
+
         doStrafe()
 
         if(justAttacked) {
-            sprintResetTicks = 6
+            sprintResetTicks = 5
             justAttacked = false
         }
 
@@ -76,20 +79,21 @@ object AutoFighter : Toggleable(true) {
             return
         }
 
-        PlayerControlHelper.press(settings.keyBindForward)
+        KeyBindHelper.press(settings.keyBindForward)
     }
 
     private fun sprintReset() {
-        Debug.Logger.regular("Attacked target..")
-        PlayerControlHelper.press(sprintResetMethod.key)
+        KeyBindHelper.press(sprintResetMethod.key)
         sprintResetTicks--
-        if(sprintResetTicks > 0) return
-        PlayerControlHelper.release(sprintResetMethod.key)
     }
 
     private fun doStrafe() {
-        strafeDirection = pickStrafeDirection()
-        PlayerControlHelper.press(strafeDirection.key)
+        if(strafeSwapCooldown == 0) {
+            strafeDirection = pickStrafeDirection()
+            strafeSwapCooldown = 10
+        }
+        KeyBindHelper.press(strafeDirection.key)
+        strafeSwapCooldown = max(0, strafeSwapCooldown - 1)
     }
 
     private fun onTargetLost() {
@@ -99,7 +103,6 @@ object AutoFighter : Toggleable(true) {
     }
 
     private fun pickStrafeDirection() : StrafeDirection {
-        // TODO
         return if(Random.nextBoolean()) StrafeDirection.Left else StrafeDirection.Right
     }
 

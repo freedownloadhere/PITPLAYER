@@ -3,7 +3,6 @@ package com.github.freedownloadhere.pitplayer.utils
 import com.github.freedownloadhere.pitplayer.combat.AutoFighter
 import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.TerrainTraversal
-import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
@@ -15,7 +14,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 class EventManager {
     @SubscribeEvent
     fun onTick(e : ClientTickEvent) {
-        if(!PlayerControlHelper.ingame) return
+        if(!KeyBindHelper.ingame) return
         if(e.phase != TickEvent.Phase.END) return
 
         TerrainTraversal.updateRouteTraversal()
@@ -31,7 +30,7 @@ class EventManager {
 
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
-        if(!PlayerControlHelper.ingame) return
+        if(!KeyBindHelper.ingame) return
 
         TerrainTraversal.renderPath()
         Debug.renderBresenham()
@@ -42,7 +41,7 @@ class EventManager {
 
     @SubscribeEvent
     fun renderText(e : RenderGameOverlayEvent.Text) {
-        if(!PlayerControlHelper.ingame) return
+        if(!KeyBindHelper.ingame) return
     }
 
     @SubscribeEvent

@@ -1,7 +1,8 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
 import com.github.freedownloadhere.pitplayer.BotState
-import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
+import com.github.freedownloadhere.pitplayer.combat.AimAssist
+import com.github.freedownloadhere.pitplayer.utils.KeyBindHelper
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerMovementHelper
 import com.github.freedownloadhere.pitplayer.pathing.moveset.Movement
@@ -17,16 +18,16 @@ object TerrainTraversal {
     }
 
     fun updateRouteTraversal() {
-        PlayerControlHelper.reset()
+        KeyBindHelper.reset()
         if(BotState.path.isNullOrEmpty()) { BotState.dest = null; return }
 
         val node = BotState.path!!.last()
-        PlayerControlHelper.lookAtYaw(node.pos)
-        PlayerControlHelper.lookAtPitch(15.0f)
-        PlayerControlHelper.press(settings.keyBindForward)
+        AimAssist.lookAtYaw(node.pos)
+        AimAssist.changePitch(15.0f)
+        KeyBindHelper.press(settings.keyBindForward)
 
         if(PlayerMovementHelper.shouldJump(node))
-            PlayerControlHelper.press(settings.keyBindJump)
+            KeyBindHelper.press(settings.keyBindJump)
 
         val nodePos = node.pos.toBlockPos()
         val nodePosXZ = Vec3i(nodePos.x, 0, nodePos.z)

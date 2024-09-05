@@ -2,7 +2,7 @@ package com.github.freedownloadhere.pitplayer
 
 import com.github.freedownloadhere.pitplayer.combat.AutoClicker
 import com.github.freedownloadhere.pitplayer.commands.DebugCommand
-import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
+import com.github.freedownloadhere.pitplayer.utils.KeyBindHelper
 import com.github.freedownloadhere.pitplayer.utils.EventManager
 import com.github.freedownloadhere.pitplayer.utils.Keybinds
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -28,7 +28,7 @@ class Start {
         GlobalScope.launch {
             while(true) {
                 delay(1L)
-                if(!PlayerControlHelper.ingame) continue
+                if(!KeyBindHelper.ingame) continue
                 AutoClicker.update()
             }
         }
