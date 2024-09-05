@@ -6,14 +6,29 @@ import com.github.freedownloadhere.pitplayer.extensions.settings
 import com.github.freedownloadhere.pitplayer.extensions.world
 import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLiving
+import kotlin.random.Random
 
 object AutoFighter : Toggleable(true) {
+    enum class SprintResetMethod(val key : KeyBinding) {
+        WTap(settings.keyBindForward),
+        STap(settings.keyBindBack),
+        Blockhit(settings.keyBindUseItem),
+        SneakTap(settings.keyBindSneak)
+    }
+    enum class StrafeDirection(val key : KeyBinding) {
+        Left(settings.keyBindLeft),
+        Right(settings.keyBindRight)
+    }
+
     var target : EntityLiving? = null
         private set
-    var attackTicks : Int = 0
+    var sprintResetTicks : Int = 0
         private set
     var justAttacked : Boolean = false
+    var sprintResetMethod : SprintResetMethod = SprintResetMethod.SneakTap
+    var strafeDirection : StrafeDirection = StrafeDirection.Left
 
     fun findTarget() {
         val entityList = world.loadedEntityList
@@ -45,34 +60,47 @@ object AutoFighter : Toggleable(true) {
     }
 
     fun update() {
-        if(target?.isDead == true)
-            onTargetLost()
-        if(target == null)
-            return
+        if(target?.isDead == true) onTargetLost()
+        if(target == null) return
+
         PlayerControlHelper.lookAt(target!!)
+        doStrafe()
+
         if(justAttacked) {
-            attackTicks = 4
+            sprintResetTicks = 6
             justAttacked = false
         }
-        if(attackTicks > 0) {
-            onAttack()
+
+        if(sprintResetTicks > 0) {
+            sprintReset()
             return
         }
+
         PlayerControlHelper.press(settings.keyBindForward)
     }
 
-    fun onAttack() {
+    private fun sprintReset() {
         Debug.Logger.regular("Attacked target..")
-        PlayerControlHelper.press(settings.keyBindUseItem)
-        attackTicks--
-        if(attackTicks > 0) return
-        PlayerControlHelper.release(settings.keyBindUseItem)
+        PlayerControlHelper.press(sprintResetMethod.key)
+        sprintResetTicks--
+        if(sprintResetTicks > 0) return
+        PlayerControlHelper.release(sprintResetMethod.key)
+    }
+
+    private fun doStrafe() {
+        strafeDirection = pickStrafeDirection()
+        PlayerControlHelper.press(strafeDirection.key)
     }
 
     private fun onTargetLost() {
         target = null
         AutoClicker.disable()
         Debug.Logger.regular("Target was lost")
+    }
+
+    private fun pickStrafeDirection() : StrafeDirection {
+        // TODO
+        return if(Random.nextBoolean()) StrafeDirection.Left else StrafeDirection.Right
     }
 
     private fun isEntityReachable(entity : EntityLiving) : Boolean {

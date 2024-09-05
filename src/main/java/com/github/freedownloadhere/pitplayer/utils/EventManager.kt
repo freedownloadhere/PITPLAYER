@@ -4,9 +4,6 @@ import com.github.freedownloadhere.pitplayer.combat.AutoFighter
 import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.TerrainTraversal
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerControlHelper
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
@@ -28,7 +25,7 @@ class EventManager {
     @SubscribeEvent
     fun onAttackEntity(e : AttackEntityEvent) {
         if(e.target == null) return
-        if(e.target == AutoFighter.target && AutoFighter.attackTicks == 0)
+        if(e.target == AutoFighter.target && AutoFighter.sprintResetTicks == 0)
             AutoFighter.justAttacked = true
     }
 
