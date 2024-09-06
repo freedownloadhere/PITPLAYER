@@ -1,5 +1,6 @@
 package com.github.freedownloadhere.pitplayer.utils
 
+import com.github.freedownloadhere.pitplayer.debug.Debug
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -16,6 +17,7 @@ class EventManager {
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
         if(!PlayerControlHelper.ingame) return
+        Debug.renderPath()
     }
 
     @SubscribeEvent

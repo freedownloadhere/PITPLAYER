@@ -3,6 +3,7 @@ package com.github.freedownloadhere.pitplayer.extensions
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import kotlin.math.floor
+import kotlin.math.pow
 
 val Vec3.x : Double
     get() = xCoord
@@ -43,4 +44,16 @@ fun Vec3.add(x1 : Double, y1 : Double, z1 : Double) : Vec3 {
 
 fun Vec3.squareDistanceToXZ(pos : Vec3) : Double {
     return squareDistanceTo(Vec3(pos.x, y, pos.z))
+}
+
+fun Vec3.truncate() : Vec3 {
+    return Vec3(
+        (x * 10).toInt() / 10.0,
+        (y * 10).toInt() / 10.0,
+        (z * 10).toInt() / 10.0
+    )
+}
+
+fun Vec3.matches(other : Vec3) : Boolean {
+    return x == other.x && y == other.y && z == other.z
 }

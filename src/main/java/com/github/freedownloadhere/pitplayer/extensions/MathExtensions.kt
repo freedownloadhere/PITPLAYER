@@ -12,3 +12,7 @@ fun Float.cropAngle180() : Float {
 fun Double.toDegrees() : Double {
     return this * 180.0 / PI
 }
+
+fun Float.toRadians() : Float {
+    return this * 0.017452778f
+}

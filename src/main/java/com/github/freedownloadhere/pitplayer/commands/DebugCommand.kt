@@ -24,6 +24,10 @@ class DebugCommand : CommandBase() {
                 else
                     Debug.simulateMove(args[1], args[2], args[3])
             }
+            "path" -> {
+                if(args.size < 4) return
+                Debug.createPath(args[1], args[2], args[3])
+            }
         }
     }
 
