@@ -6,24 +6,24 @@ import com.github.freedownloadhere.pitplayer.utils.KeyBindHelper
 import kotlinx.coroutines.delay
 
 object AutoClicker : Toggleable("AutoClicker") {
-    private var cps = 10
+    private var cps = 10L
         set(v) {
             field = v
             timeBeforeNextClick = 1000L / v
         }
 
-    private var timeBeforeNextClick : Long = 100L
-    private var lastClickTimeMillis : Long = 0L
+    private var timeBeforeNextClick = 100L
+    private var lastClickTime = 0L
 
-    fun update(deltaTimeMillis : Long) {
+    fun update(deltaTime : Long) {
         if(cps < 1) disable()
         if(!toggled) return
 
-        lastClickTimeMillis += deltaTimeMillis
+        lastClickTime += deltaTime
 
-        if(lastClickTimeMillis >= timeBeforeNextClick) {
+        if(lastClickTime >= timeBeforeNextClick) {
             KeyBindHelper.press(settings.keyBindAttack)
-            lastClickTimeMillis = 0L
+            lastClickTime = 0L
         }
     }
 }
