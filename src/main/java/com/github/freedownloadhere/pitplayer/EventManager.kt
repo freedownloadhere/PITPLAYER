@@ -16,8 +16,10 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import java.time.Instant
 
 class EventManager {
+    private var lastTime = Instant.now().toEpochMilli()
+
     @SubscribeEvent
-    fun onTick(e : ClientTickEvent) {
+    fun fixedUpdate(e : ClientTickEvent) {
         if(!BotState.ingame) return
         if(e.phase != TickEvent.Phase.END) return
 
@@ -25,10 +27,8 @@ class EventManager {
         AutoFighter.update()
     }
 
-    private var lastTime = Instant.now().toEpochMilli()
-
     @SubscribeEvent
-    fun onRenderTick(e : TickEvent.RenderTickEvent) {
+    fun nonFixedUpdate(e : TickEvent.RenderTickEvent) {
         if(!BotState.ingame) return
 
         val newTime = Instant.now().toEpochMilli()

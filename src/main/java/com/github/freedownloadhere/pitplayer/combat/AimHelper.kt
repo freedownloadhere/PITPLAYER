@@ -1,14 +1,14 @@
 package com.github.freedownloadhere.pitplayer.combat
 
 import com.github.freedownloadhere.pitplayer.extensions.*
-import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
+import com.github.freedownloadhere.pitplayer.interfaces.Killable
 import com.github.freedownloadhere.pitplayer.utils.RandomHelper
 import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
 import kotlin.math.min
 
-object AimHelper : Toggleable("Aim Helper", true) {
+object AimHelper : Killable("Aim Helper") {
     private var aimTime = 100L
     private var currTime = 0L
     private var shouldUpdate = false
@@ -16,20 +16,8 @@ object AimHelper : Toggleable("Aim Helper", true) {
     private var maxError = 0.2f
     private var delta = ViewAngles()
 
-    fun lookAt(pos : Vec3) : AimHelper {
-        if(!toggled) return this
-
-        val error = RandomHelper.fromRange(1.0f - maxError .. 1.0f + maxError)
-        delta = calcDelta(pos) * error
-
-        currTime = 0L
-        shouldUpdate = true
-
-        return this
-    }
-
     fun update(deltaTime : Long) {
-        if(!toggled) return
+        if(killed) return
         if(!shouldUpdate) return
 
         currTime = min(aimTime, currTime + deltaTime)
@@ -43,8 +31,20 @@ object AimHelper : Toggleable("Aim Helper", true) {
             gradualAim(deltaTime)
     }
 
+    fun lookAt(pos : Vec3) : AimHelper {
+        if(killed) return this
+
+        val error = RandomHelper.fromRange(1.0f - maxError .. 1.0f + maxError)
+        delta = calcDelta(pos) * error
+
+        currTime = 0L
+        shouldUpdate = true
+
+        return this
+    }
+
     fun setVA(yaw : Float?, pitch : Float?) : AimHelper {
-        if(!toggled) return this
+        if(killed) return this
 
         if(yaw != null) player.rotationYaw = yaw
         if(pitch != null) player.rotationPitch = pitch
@@ -53,7 +53,7 @@ object AimHelper : Toggleable("Aim Helper", true) {
     }
 
     fun pitch(pitch : Float?) : AimHelper {
-        if(!toggled) return this
+        if(killed) return this
 
         val deltaPitch = if(pitch == null) 0.0f else pitch - player.rotationPitch
         delta = ViewAngles(delta.yaw, deltaPitch)
