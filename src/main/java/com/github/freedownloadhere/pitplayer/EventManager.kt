@@ -1,9 +1,11 @@
-package com.github.freedownloadhere.pitplayer.utils
+package com.github.freedownloadhere.pitplayer
 
+import com.github.freedownloadhere.pitplayer.combat.AimHelper
 import com.github.freedownloadhere.pitplayer.combat.AutoClicker
 import com.github.freedownloadhere.pitplayer.combat.AutoFighter
 import com.github.freedownloadhere.pitplayer.debug.Debug
 import com.github.freedownloadhere.pitplayer.pathing.TerrainTraversal
+import com.github.freedownloadhere.pitplayer.utils.Keybinds
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.entity.player.AttackEntityEvent
@@ -16,7 +18,7 @@ import java.time.Instant
 class EventManager {
     @SubscribeEvent
     fun onTick(e : ClientTickEvent) {
-        if(!KeyBindHelper.ingame) return
+        if(!BotState.ingame) return
         if(e.phase != TickEvent.Phase.END) return
 
         TerrainTraversal.updateRouteTraversal()
@@ -27,10 +29,13 @@ class EventManager {
 
     @SubscribeEvent
     fun onRenderTick(e : TickEvent.RenderTickEvent) {
+        if(!BotState.ingame) return
+
         val newTime = Instant.now().toEpochMilli()
         val deltaTimeMillis = newTime - lastTime
 
         AutoClicker.update(deltaTimeMillis)
+        AimHelper.update(deltaTimeMillis)
 
         lastTime = newTime
     }
@@ -44,7 +49,7 @@ class EventManager {
 
     @SubscribeEvent
     fun highlightBlock(e : DrawBlockHighlightEvent) {
-        if(!KeyBindHelper.ingame) return
+        if(!BotState.ingame) return
 
         TerrainTraversal.renderPath()
         Debug.renderBresenham()
@@ -55,7 +60,7 @@ class EventManager {
 
     @SubscribeEvent
     fun renderText(e : RenderGameOverlayEvent.Text) {
-        if(!KeyBindHelper.ingame) return
+        if(!BotState.ingame) return
     }
 
     @SubscribeEvent

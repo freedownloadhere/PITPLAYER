@@ -1,7 +1,7 @@
 package com.github.freedownloadhere.pitplayer.pathing
 
 import com.github.freedownloadhere.pitplayer.BotState
-import com.github.freedownloadhere.pitplayer.combat.AimAssist
+import com.github.freedownloadhere.pitplayer.combat.AimHelper
 import com.github.freedownloadhere.pitplayer.utils.KeyBindHelper
 import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.pathing.movement.PlayerMovementHelper
@@ -22,8 +22,7 @@ object TerrainTraversal {
         if(BotState.path.isNullOrEmpty()) { BotState.dest = null; return }
 
         val node = BotState.path!!.last()
-        AimAssist.lookAtYaw(node.pos)
-        AimAssist.changePitch(15.0f)
+        AimHelper.lookAt(node.pos).pitch(15.0f)
         KeyBindHelper.press(settings.keyBindForward)
 
         if(PlayerMovementHelper.shouldJump(node))

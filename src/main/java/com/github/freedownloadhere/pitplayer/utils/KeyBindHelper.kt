@@ -1,19 +1,10 @@
 package com.github.freedownloadhere.pitplayer.utils
 
-import com.github.freedownloadhere.pitplayer.extensions.*
 import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
 import com.github.freedownloadhere.pitplayer.mixin.AccessorKeyBinding
 import net.minecraft.client.settings.KeyBinding
-import net.minecraft.entity.EntityLiving
-import net.minecraft.util.Vec3
-import kotlin.math.atan2
-import kotlin.math.hypot
 
-object KeyBindHelper : Toggleable("Keybind Helper",true) {
-    val state : String
-        get() = "\u00A7lRemote: \u00A7${if(toggled) "aYes" else "cNo"}"
-    val ingame : Boolean
-        get() = mc.thePlayer != null && mc.theWorld != null
+object KeyBindHelper : Toggleable("Keybind Helper", true) {
     private val affectedKeys = mutableSetOf<AccessorKeyBinding>()
 
     fun reset() {

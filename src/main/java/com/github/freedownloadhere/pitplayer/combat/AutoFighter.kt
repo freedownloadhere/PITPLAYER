@@ -1,6 +1,7 @@
 package com.github.freedownloadhere.pitplayer.combat
 
 import com.github.freedownloadhere.pitplayer.debug.Debug
+import com.github.freedownloadhere.pitplayer.extensions.eyePosition
 import com.github.freedownloadhere.pitplayer.extensions.player
 import com.github.freedownloadhere.pitplayer.extensions.settings
 import com.github.freedownloadhere.pitplayer.extensions.world
@@ -50,7 +51,7 @@ object AutoFighter : Toggleable("AutoFighter", true) {
             val dist = playerPos.squareDistanceTo(entity.positionVector)
             if(dist > bestDist) continue
 
-            bestDist = dist;
+            bestDist = dist
             target = entity
         }
 
@@ -67,7 +68,7 @@ object AutoFighter : Toggleable("AutoFighter", true) {
         if(target?.isDead == true) onTargetLost()
         if(target == null) return
 
-        AimAssist.lookAt(target!!, 0L)
+        AimHelper.lookAt(target!!.eyePosition)
 
         doStrafe()
 
@@ -108,8 +109,8 @@ object AutoFighter : Toggleable("AutoFighter", true) {
         return if(Random.nextBoolean()) StrafeDirection.Left else StrafeDirection.Right
     }
 
+    // TODO
     private fun isEntityReachable(entity : Entity) : Boolean {
-        // TODO
         return true
     }
 }
