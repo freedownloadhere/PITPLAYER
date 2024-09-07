@@ -9,7 +9,7 @@ import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
 
-object KeyBindHelper : Toggleable(true) {
+object KeyBindHelper : Toggleable("Keybind Helper",true) {
     val state : String
         get() = "\u00A7lRemote: \u00A7${if(toggled) "aYes" else "cNo"}"
     val ingame : Boolean

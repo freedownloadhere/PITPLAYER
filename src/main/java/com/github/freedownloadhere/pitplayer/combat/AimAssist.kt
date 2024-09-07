@@ -11,7 +11,7 @@ import net.minecraft.util.Vec3
 import kotlin.math.atan2
 import kotlin.math.hypot
 
-object AimAssist : Toggleable(true) {
+object AimAssist : Toggleable("AimAssist", true) {
     private var currentlyAimingYaw = false
     private var currentlyAimingPitch = false
 

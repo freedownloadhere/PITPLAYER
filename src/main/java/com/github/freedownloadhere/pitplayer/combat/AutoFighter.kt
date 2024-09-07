@@ -7,11 +7,13 @@ import com.github.freedownloadhere.pitplayer.extensions.world
 import com.github.freedownloadhere.pitplayer.interfaces.Toggleable
 import com.github.freedownloadhere.pitplayer.utils.KeyBindHelper
 import net.minecraft.client.settings.KeyBinding
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLiving
+import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.max
 import kotlin.random.Random
 
-object AutoFighter : Toggleable(true) {
+object AutoFighter : Toggleable("AutoFighter", true) {
     enum class SprintResetMethod(val key : KeyBinding) {
         WTap(settings.keyBindForward),
         STap(settings.keyBindBack),
@@ -23,7 +25,7 @@ object AutoFighter : Toggleable(true) {
         Right(settings.keyBindRight)
     }
 
-    var target : EntityLiving? = null
+    var target : Entity? = null
         private set
     var sprintResetTicks : Int = 0
         private set
@@ -41,7 +43,7 @@ object AutoFighter : Toggleable(true) {
         for(entity in entityList) {
             if(entity == null) continue
             if(entity == player) continue
-            if(entity !is EntityLiving) continue
+            if(entity !is EntityLiving && entity !is EntityPlayer) continue
             if(entity.isDead) continue
             if(!isEntityReachable(entity)) continue
 
@@ -106,7 +108,7 @@ object AutoFighter : Toggleable(true) {
         return if(Random.nextBoolean()) StrafeDirection.Left else StrafeDirection.Right
     }
 
-    private fun isEntityReachable(entity : EntityLiving) : Boolean {
+    private fun isEntityReachable(entity : Entity) : Boolean {
         // TODO
         return true
     }
